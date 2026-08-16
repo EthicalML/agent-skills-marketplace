@@ -1,4 +1,4 @@
-# EthicalML Agent Skills Marketplace
+# The Institute's Agent Skills Marketplace
 
 [![Validate](https://github.com/EthicalML/agent-skills-marketplace/actions/workflows/validate.yml/badge.svg)](https://github.com/EthicalML/agent-skills-marketplace/actions/workflows/validate.yml)
 
@@ -12,23 +12,27 @@ This repository is an open-source marketplace of portable agent skills and plugi
 | `site-capture` | `site-capture` | Record scripted website walkthroughs as video or GIF. |
 | `agent-harness` | `create-agent-harness` | Build a skill-driven Python agent against an OpenAI-compatible endpoint. |
 
-## Quickstart
+## Installation
 
-Claude Code:
+The standard way to install is to point your AI assistant (Claude Code or Copilot CLI) at [INSTALL.md](INSTALL.md) — it is an assistant-driven install gate that checks prerequisites, registers the marketplace, and installs the selected plugins:
 
 ```text
-/plugin marketplace add EthicalML/agent-skills-marketplace
+Follow https://raw.githubusercontent.com/EthicalML/agent-skills-marketplace/master/INSTALL.md to install this marketplace
+```
+
+For a manual install, the underlying commands are:
+
+```text
+/plugin marketplace add EthicalML/agent-skills-marketplace          # Claude Code
 /plugin install <plugin>@agent-skills-marketplace
 ```
 
-Copilot CLI:
-
 ```bash
-copilot plugin marketplace add EthicalML/agent-skills-marketplace
+copilot plugin marketplace add EthicalML/agent-skills-marketplace   # Copilot CLI
 copilot plugin install <plugin>@agent-skills-marketplace
 ```
 
-Replace `<plugin>` with `dev-utilities`, `site-capture`, or `agent-harness`. See [INSTALL.md](INSTALL.md) for the guided installation and update flow.
+Replace `<plugin>` with `dev-utilities`, `site-capture`, or `agent-harness`. INSTALL.md also covers follow-up installs, updates, and breaking-change recovery.
 
 ## Contributing
 
