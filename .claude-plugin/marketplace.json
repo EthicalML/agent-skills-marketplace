@@ -4,7 +4,7 @@
     "name": "The Institute for Ethical AI & Machine Learning"
   },
   "metadata": {
-    "description": "Open-source marketplace of agent skills and plugins for Claude Code and Copilot CLI.",
+    "description": "The Institute's Agent Skills Marketplace: open-source agent skills and plugins for Claude Code and Copilot CLI.",
     "version": "0.1.0"
   },
   "plugins": [
