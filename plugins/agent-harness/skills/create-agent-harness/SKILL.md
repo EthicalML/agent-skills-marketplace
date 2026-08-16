@@ -1,0 +1,47 @@
+---
+name: create-agent-harness
+description: Use to build a skill-driven agent harness with pydantic-ai-harness, deferred Skills capability loading, custom tools, and any OpenAI-compatible model endpoint, for local or scheduled execution.
+---
+
+# Create Agent Harness
+
+Use this skill when a workload needs **agent logic** — a model deciding which queries to run, judging results, choosing whether to act — rather than a fixed prompt. The stack is **pydantic-ai + pydantic-ai-harness** against any OpenAI-compatible endpoint: pure Python, with skills, shell, and filesystem capabilities available when needed. Verified behavior is backend-independent: deferred skill loading works including description-based activation, marketplace skills run unmodified when their dependencies are present, and tool calls can be checked through wire-level traces.
+
+## Workflow
+
+1. **Clarify** only what the request does not state:
+   - Which **skills** drive the behavior — an existing marketplace skill, a purpose-written one, or both. Author purpose-written judgement, governance, and notification skills with **writing-skills**.
+   - Which **tools** the agent gets (see step 3), and **where it runs** — a local machine or a scheduled platform job.
+   - Endpoint, model, and authentication: prefer explicit constructor arguments, then `OPENAI_BASE_URL`, `OPENAI_API_KEY`, and `OPENAI_MODEL`. Query the provider for available models when it supports model discovery.
+   - If the stack choice is questioned or another harness is proposed, read `docs/learnings.md` first; it holds the decision record and evidence.
+
+2. **Scaffold.** Copy `assets/harness_agent.py` and create the layout:
+
+   ```text
+   <project>/
+   ├── harness_agent.py
+   └── skills/
+       └── <skill-name>/SKILL.md   (+ docs/, assets/ as the skill ships them)
+   ```
+
+   Copy marketplace skill folders verbatim, minus their `tmp/`. If a skill resolves paths outside its own directory to a plugin root, copy those plugin-level dependencies beside `skills/` too or its steps can break silently.
+
+3. **Pick the tool surface** — narrow tools by default, broad capabilities only when the skill's own tooling is wanted:
+   - **Narrow (default, and always for unattended jobs):** 2–4 typed Python functions via `@agent.tool_plain`, such as a bounded data query or notification tool. This is deterministic and avoids arbitrary shell access.
+   - **Broad (local runs of unmodified skills):** `Shell()` plus `FileSystem()` from the harness. Bundled scripts and adapters then run as authored, provided their runtimes and dependencies are installed.
+
+4. **Wire model and instructions** in the template:
+   - Pass `base_url`, `api_key`, and `model_name` explicitly or use the standard OpenAI-compatible environment variables. For Databricks Foundation Model APIs, use a base URL such as `https://<workspace>.cloud.databricks.com/serving-endpoints` and obtain a local OAuth token with `databricks auth token --host https://<workspace>.cloud.databricks.com`; jobs can use their execution-context token.
+   - Instructions must include a **run-mode preamble**: headless runs get "skip freshness/update steps; never ask the user — decide and proceed" plus any query bounds. One sentence is enough to adapt interactive skills; do not rewrite them.
+   - `Skills(SKILLS_DIR)` registers each child containing a SKILL.md as a deferred capability. Let the model load the skill through `load_capability`; do not paste SKILL.md bodies into instructions.
+
+5. **Run and verify with a trace — never trust the final answer alone.** The template writes `trace.txt` from `result.all_messages()`. Check, in this order:
+   - `load_capability` was called and its return contains the skill body. **Pitfall:** these parts are typed subclasses (`LoadCapabilityCallPart` and `LoadCapabilityReturnPart`), so filter with `isinstance(part, ToolCallPart)`, never by exact class-name string, or skill loads silently vanish from the trace.
+   - Data claims in the final answer are byte-traceable to a tool return, not narrated values.
+   - `result.usage` is a property, not a method.
+
+   If the model loops or refuses tools, first suspect that the prompt is doing the tools' job for it; state the goal, not the steps.
+
+6. **Deploy on a cadence if scheduled.** Use whatever job scheduler the platform provides. For Databricks jobs, add `pydantic-ai-harness[skills]` and `openai` to the `%pip` dependencies and upload the `skills/` directory beside the notebook. Replace local authentication and tools with execution-context authentication and in-job implementations.
+
+7. **Close the loop.** Report what the agent did from the trace — skills loaded, tools called, and judgement made — rather than from its self-narration. If a skill gap surfaced, offer to add it with **writing-skills** and the marketplace PR flow. If the run produced a durable verified fact, pitfall, or decision, append a dated entry to `docs/learnings.md`; if it changes a step, update that step here too.

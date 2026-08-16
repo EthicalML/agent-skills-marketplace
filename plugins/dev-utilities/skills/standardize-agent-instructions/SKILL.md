@@ -1,0 +1,76 @@
+---
+name: standardize-agent-instructions
+description: Standardize a codebase's agent instruction files so one set of files works across many harnesses (Copilot, Claude Code, Codex/AGENTS.md consumers, Cursor, Gemini). Use when asked to standardize, consolidate, or migrate agent/AI instruction files (CLAUDE.md, AGENTS.md, copilot-instructions, .instructions.md, rules files) in a repo.
+---
+
+# Standardize Agent Instructions
+
+Converge a repo's agent instruction files onto one layout: **`.github` files are the single source of truth (SSOT), everything else is a symlink to them.**
+
+Target layout:
+
+```
+.github/copilot-instructions.md            # REAL: global instructions (SSOT)
+.github/instructions/<name>.instructions.md # REAL: path-scoped, dual frontmatter (applyTo: + paths:)
+CLAUDE.md    -> .github/copilot-instructions.md   # symlink
+AGENTS.md    -> .github/copilot-instructions.md   # symlink
+.claude/rules/<name>.md -> ../../.github/instructions/<name>.instructions.md  # symlinks
+```
+
+If the user explicitly asks WHY this layout (reasoning, justification, sources), read `references/rationale.md`. Otherwise do not.
+
+## Steps
+
+1. **Inventory.** Find every existing instruction file and note which are real files vs symlinks:
+   ```bash
+   ls -la CLAUDE.md AGENTS.md GEMINI.md .cursorrules .windsurfrules 2>/dev/null
+   ls -la .github/copilot-instructions.md .github/instructions/ .claude/rules/ .cursor/rules/ 2>/dev/null
+   grep -lE 'applyTo:|paths:' .github/instructions/* .claude/rules/* 2>/dev/null
+   ```
+
+2. **Consolidate the global file.** End state: one real `.github/copilot-instructions.md`.
+   - One global file exists elsewhere (CLAUDE.md / AGENTS.md): `git mv` it to `.github/copilot-instructions.md`. If a stub/pointer file already sits at that path ("read AGENTS.md"), `git rm` it first — `git mv` refuses to overwrite.
+   - Multiple global files with differing content: read them, merge into one (keep every non-duplicate instruction; prefer the most current wording; ask the user only if two instructions genuinely contradict).
+   - Add/refresh a short "Agent Instruction Files (SSOT + symlinks)" section in it stating: `.github` files are the SSOT, root CLAUDE.md/AGENTS.md and `.claude/rules/*` are symlinks, only ever edit the `.github` files, and keep `applyTo:`/`paths:` globs in sync.
+
+3. **Consolidate path-scoped files** into `.github/instructions/<name>.instructions.md`, one per domain. Sources: existing `.instructions.md`, `.claude/rules/*.md`, `.cursor/rules/*`. Give every file dual frontmatter — same globs twice:
+   ```yaml
+   ---
+   applyTo: "kaos-ui/src/components/**"        # Copilot: single glob string; multi-path uses {a,b} braces
+   paths:                                       # Claude Code: list of globs
+     - "kaos-ui/src/components/**"
+   ---
+   ```
+   - Brace glob in `applyTo` ↔ expanded list in `paths` (e.g. `"{a/**,b.ts}"` ↔ `["a/**", "b.ts"]`). Existing files may use Copilot's bare comma-separated form (`applyTo: 'a/**,b.ts'`) — normalize it to the brace form.
+   - A path-scoped file with no glob: infer the glob from its content (e.g. docs guidance → `docs/**`); if nothing fits, fold its content into the global file instead.
+
+4. **Create the symlinks** (relative targets, from repo root):
+   ```bash
+   ln -sfn .github/copilot-instructions.md CLAUDE.md
+   ln -sfn .github/copilot-instructions.md AGENTS.md
+   mkdir -p .claude/rules
+   for f in .github/instructions/*.instructions.md; do
+     n=$(basename "$f" .instructions.md)
+     ln -sfn "../../.github/instructions/$n.instructions.md" ".claude/rules/$n.md"
+   done
+   ```
+   Note (native Windows only, non-WSL2): checked-out symlinks need Developer Mode/admin there, so if the repo targets non-WSL2 Windows contributors, skip symlinks for the root files and instead make CLAUDE.md a real one-liner containing `@.github/copilot-instructions.md` (Claude's import syntax); note AGENTS.md consumers then need a real copy. WSL2 checkouts handle symlinks fine — no change needed.
+
+   **Gitignore check (common silent failure):** repos often gitignore `CLAUDE.md`/`AGENTS.md`, which makes `git add -A` skip the symlinks without any error. Run `git check-ignore -v CLAUDE.md AGENTS.md .claude/rules/*.md`; remove matching ignore lines — or, when a whole directory is ignored (e.g. `.claude/*`), add a negation instead (`!.claude/rules/`). Then confirm with `git ls-files -s CLAUDE.md AGENTS.md` that both are staged with mode `120000` (git's symlink mode).
+
+5. **Fix references — one convention.** All prose/skill references to the global instructions use `.github/copilot-instructions.md` (the real file), never `CLAUDE.md`/`AGENTS.md`; the only place the symlink names appear is the layout description itself. Same for path-scoped: reference `.github/instructions/<name>.instructions.md`, not `.claude/rules/*`. Grep the repo for paths to the old locations and update them:
+   ```bash
+   grep -rn --exclude-dir=.git -e 'CLAUDE\.md' -e 'AGENTS\.md' -e '\.claude/rules' -e 'copilot-instructions' -e 'instructions\.md' . | grep -v -e '^\./\.github/' -e 'worktrees/'
+   ```
+   Skip matches inside other worktrees or vendored dirs. If the repo lints/format-checks markdown or config in CI (prettier etc.), run that formatter over every file you edited — frontmatter and reference edits otherwise ship a red CI.
+
+6. **Verify.**
+   ```bash
+   head -3 CLAUDE.md && head -3 AGENTS.md            # must print instruction content, not a path string
+   for f in .claude/rules/*.md; do head -1 "$f" | grep -q -- '---' || echo "BROKEN: $f"; done
+   grep -L 'applyTo:' .github/instructions/*.md      # must be empty
+   grep -L 'paths:' .github/instructions/*.md        # must be empty
+   ```
+   If a symlink prints a path string instead of content, its relative target is wrong — fix the `../` depth.
+
+7. **Ship.** Commit (renames via `git mv` so history is preserved) and open a PR unless the user asked for local-only changes. After merge, remind the user of the one runtime check that cannot be done locally: confirm Copilot code review still picks up instructions on a real PR (server-side symlink behavior is undocumented — the SSOT direction exists precisely to minimize this risk).

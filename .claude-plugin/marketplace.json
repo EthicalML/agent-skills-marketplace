@@ -1,0 +1,24 @@
+{
+  "name": "agent-skills-marketplace",
+  "owner": {
+    "name": "The Institute for Ethical AI & Machine Learning"
+  },
+  "metadata": {
+    "description": "Open-source marketplace of agent skills and plugins for Claude Code and Copilot CLI.",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "dev-utilities",
+      "source": "./plugins/dev-utilities"
+    },
+    {
+      "name": "site-capture",
+      "source": "./plugins/site-capture"
+    },
+    {
+      "name": "agent-harness",
+      "source": "./plugins/agent-harness"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "name": "site-capture",
+  "description": "Record scripted website walkthroughs as polished video or GIF captures.",
+  "version": "0.1.0",
+  "keywords": ["browser", "capture", "video", "gif"],
+  "skills": ["./skills/"]
+}

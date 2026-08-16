@@ -1,0 +1,7 @@
+{
+  "name": "dev-utilities",
+  "description": "Utilities for writing skills, explaining code changes, and standardizing agent instructions across development tools.",
+  "version": "0.1.0",
+  "keywords": ["skills", "authoring", "code-review", "instructions"],
+  "skills": ["./skills/"]
+}

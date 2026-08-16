@@ -1,0 +1,7 @@
+{
+  "name": "agent-harness",
+  "description": "Build skill-driven Python agent harnesses for OpenAI-compatible model endpoints and scheduled workloads.",
+  "version": "0.1.0",
+  "keywords": ["agents", "harness", "python", "openai-compatible"],
+  "skills": ["./skills/"]
+}

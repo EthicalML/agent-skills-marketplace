@@ -1,0 +1,9 @@
+zalando
+zllm
+zign
+pt3-copilot
+_zse
+zalando-e2
+lin_api_
+dapi[0-9a-f]
+AKIA[0-9A-Z]

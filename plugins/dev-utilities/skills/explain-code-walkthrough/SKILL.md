@@ -1,0 +1,108 @@
+---
+name: explain-code-walkthrough
+description: Succinct walkthrough of a code change. Use when the user asks to explain, walk through, or break down a commit, PR, diff, or change set. Accepts a commit SHA, a commit title/message fragment, a PR number or URL, a git range, or a pasted diff, plus optional extra guidance.
+---
+
+# Explain a code change as a walkthrough
+
+The argument identifies the change; anything after it is passthrough guidance
+(e.g. "focus on the operator side", "include tests") and overrides the
+defaults below where it conflicts.
+
+## 1. Resolve the target
+
+Try in this order; say which interpretation you chose:
+- **Commit SHA** (7-40 hex chars): `git show <sha>`.
+- **PR number or URL**: `gh pr diff <n>` and `gh pr view <n> --json title,body,commits`.
+- **Git range** (contains `..`): `git diff <range>` plus `git log --oneline <range>`.
+- **Pasted diff** (argument contains `diff --git` or `@@`): use it verbatim; skip git.
+- **Otherwise a commit title/message fragment**: `git log --all --grep="<text>"
+  --oneline -5`; if several match, list them and ask which one.
+
+Always read the FULL diff before writing anything. Never explain from the
+commit message alone.
+
+## 2. Walkthrough method
+
+This is a code walkthrough in an explanatory register, not a blog post: no
+intro, no conclusion, no scene-setting. The core discipline is the interleave:
+
+> context (1-2 sentences: why this hunk exists)
+> → the actual code (a hunk, verbatim from the diff — never paraphrased,
+>   never retyped; a few lines up to a full function, whichever is the
+>   natural unit)
+> → explanation of exactly those lines
+> → continue to the next hunk.
+
+Rules:
+- **Lead with intent**: one sentence stating what the change does and why.
+- **Group by theme, not by file**; order sections by the logic of the change.
+- **Diagrams for structure**: when the change alters a flow, a topology, or a
+  set of relationships, one small diagram beats a paragraph. Use them for the
+  primary areas; never decoratively. Prefer ASCII diagrams inline (terminals
+  do not render mermaid); use a mermaid block, or a mermaid-to-ascii
+  converter if available, when the output is destined for a document.
+- **Complete**: every non-trivial hunk is covered or explicitly grouped
+  ("the remaining N hunks are the same rename in other files"). No silent
+  skips.
+- **Core logic only; skip tests** unless asked — but end with one line on how
+  the change was validated when visible.
+- **Close with "what deliberately did not change"** when preservation is part
+  of the design.
+
+### Branching into referenced functions
+
+When walked code calls a function that is not part of the diff (a util,
+helper, or existing API), choose one of three modes per call site and keep
+the choice visible in the flow:
+
+1. **Inline branch**: pause the walkthrough, show the referenced function's
+   body (or its relevant excerpt), explain it, then return to the calling
+   hunk. Use when the helper is small and the calling code is unreadable
+   without it.
+2. **Gloss then cover right after**: give a one-line description at the call
+   site ("`write_kwargs` maps identities onto Mem0 entity ids"), finish the
+   current hunk, then cover the helper as the immediately following block.
+   Use when the helper matters but interrupting the hunk would break its
+   flow.
+3. **Gloss only**: the one-line description, nothing more. Use when the
+   helper's internals do not affect understanding of the change. Optionally
+   collect these into a short "referenced helpers" list at the end.
+
+When returning from a branch, re-anchor with a half-sentence ("back in the
+write route, ...").
+
+## 3. Style
+
+Succinct, neutral, technical, and plain. Every sentence must add
+information; delete any that does not. Succinct never means cryptic: prefer
+a short plain sentence over a compressed one that needs decoding, expand an
+acronym or term of art on first use, and keep one idea per sentence.
+
+- No filler or connective padding: no "essentially", "basically", "note
+  that", "it is worth noting", "in other words", "as we can see", "simply".
+- No micro-sentences ("That's it.", "Simple.", "Done."). Merge or delete.
+- No verbose framing ("Let's take a look at", "Now we turn to"); go straight
+  to the point.
+- No em-dashes; straight quotes only; no clause-joining colons or semicolons;
+  no "/" in prose.
+- No antithesis constructions ("not X, but Y"); state what is, directly.
+- Banned words: leverage, harness, journey, testament, underscore, delve,
+  crucial, seamless.
+- Explanations state what the code does and why it is there, in the fewest
+  words that stay precise. When a hunk is self-evident, one sentence.
+
+## 4. Length and paging
+
+Default to the shortest version that is still complete. If the user asks for
+more code, expand with fuller snippets, not more prose.
+
+When the full walkthrough would be long (more than roughly three themes or a
+few screens), page it:
+1. Open with the intent sentence and a numbered chunk map (one line per
+   chunk: theme + files).
+2. Deliver chunk 1 in full.
+3. Stop and ask whether to continue to the next chunk (or send all remaining
+   chunks at once if the user prefers).
+Each chunk is self-contained: it starts with its context and does not depend
+on the user remembering the previous chunk's code.
