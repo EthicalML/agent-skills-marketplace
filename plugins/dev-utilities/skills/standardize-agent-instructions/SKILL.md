@@ -19,6 +19,8 @@ AGENTS.md    -> .github/copilot-instructions.md   # symlink
 
 If the user explicitly asks WHY this layout (reasoning, justification, sources), read `references/rationale.md`. Otherwise do not.
 
+This skill moves files; it does not judge their content. If the instructions themselves are bloated, repetitive or largely reference material, run `writing-agents-md` after this one.
+
 ## Steps
 
 1. **Inventory.** Find every existing instruction file and note which are real files vs symlinks:

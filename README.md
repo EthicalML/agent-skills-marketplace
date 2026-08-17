@@ -8,7 +8,7 @@ This repository is an open-source marketplace of portable agent skills and plugi
 
 | Plugin | Skills | Description |
 | --- | --- | --- |
-| `dev-utilities` | `writing-skills`, `explain-code-walkthrough`, `standardize-agent-instructions` | Author reliable skills, explain code changes, and align instruction files across agent tools. |
+| `dev-utilities` | `writing-skills`, `writing-agents-md`, `explain-code-walkthrough`, `standardize-agent-instructions` | Author reliable skills, keep agent instruction files short and followable, explain code changes, and align instruction files across agent tools. |
 | `site-capture` | `site-capture` | Record scripted website walkthroughs as video or GIF. |
 | `agent-harness` | `create-agent-harness` | Build a skill-driven Python agent against an OpenAI-compatible endpoint. |
 
