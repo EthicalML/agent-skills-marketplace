@@ -39,6 +39,8 @@ ls -la CLAUDE.md AGENTS.md GEMINI.md .github/copilot-instructions.md .github/ins
 
 Edit the real file, never a symlink. If there is no single source of truth, run `standardize-agent-instructions` first.
 
+Write every in-repo path as `<root>/path`, not as a relative link: a symlinked file is read from several directory depths, so no relative path is correct from all of them.
+
 ## 3. Triage every section
 
 <!-- prettier-ignore -->
