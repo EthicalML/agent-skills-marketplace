@@ -1,0 +1,7 @@
+{
+  "name": "hol-guard",
+  "description": "Install and operate HOL Guard as a local pre-execution security boundary for supported AI coding harnesses.",
+  "version": "0.1.0",
+  "keywords": ["security", "agent-safety", "runtime", "hol-guard"],
+  "skills": ["./skills/"]
+}

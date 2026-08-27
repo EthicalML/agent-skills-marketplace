@@ -11,6 +11,7 @@ This repository is an open-source marketplace of portable agent skills and plugi
 | `dev-utilities` | `writing-skills`, `explain-code-walkthrough`, `standardize-agent-instructions` | Author reliable skills, explain code changes, and align instruction files across agent tools. |
 | `site-capture` | `site-capture` | Record scripted website walkthroughs as video or GIF. |
 | `agent-harness` | `create-agent-harness` | Build a skill-driven Python agent against an OpenAI-compatible endpoint. |
+| `hol-guard` | `hol-guard` | Install and operate HOL Guard around supported local AI coding harnesses. |
 
 ## Installation
 
@@ -32,7 +33,7 @@ copilot plugin marketplace add EthicalML/agent-skills-marketplace   # Copilot CL
 copilot plugin install <plugin>@agent-skills-marketplace
 ```
 
-Replace `<plugin>` with `dev-utilities`, `site-capture`, or `agent-harness`. INSTALL.md also covers follow-up installs, updates, and breaking-change recovery.
+Replace `<plugin>` with `dev-utilities`, `site-capture`, `agent-harness`, or `hol-guard`. INSTALL.md also covers follow-up installs, updates, and breaking-change recovery.
 
 ## Contributing
 

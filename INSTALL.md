@@ -26,6 +26,7 @@ Plugin-specific runtimes — check only for the plugins in scope:
 - `site-capture`: Node.js 20+ (`command -v node && node -v`); the skill guides the Playwright install on first use.
 - `agent-harness`: Python 3 with pip (`command -v python3`), needed only when the harness template will actually be run.
 - `dev-utilities`: no additional runtime.
+- `hol-guard`: Python with `pipx` recommended for the isolated `hol-guard` CLI installation.
 
 If a required runtime is missing, guide the user to install it (or skip that plugin), then continue.
 
@@ -38,6 +39,7 @@ Install the **default set** unless the user opts out. Confirm the list with them
 - `dev-utilities` — skill authoring (`writing-skills`), code-change walkthroughs (`explain-code-walkthrough`), and cross-harness instruction-file standardization (`standardize-agent-instructions`)
 - `site-capture` — scripted browser capture of a website as video or GIF
 - `agent-harness` — build a skill-driven Python agent (`create-agent-harness`) against any OpenAI-compatible endpoint
+- `hol-guard` — install and operate HOL Guard as a local security boundary around a supported AI coding harness
 
 No plugin in this marketplace requires an access token or an MCP server. There is nothing to create, store, or validate credential-wise — state that plainly and move on.
 
