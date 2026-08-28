@@ -49,10 +49,12 @@ When Guard queues or blocks work, inspect the request and evidence:
 
 ```bash
 hol-guard approvals
-hol-guard approvals open
+hol-guard approvals open <request-id>
 hol-guard receipts
 hol-guard diff <harness>
 ```
+
+`hol-guard approvals open` requires the pending approval request ID. Use the ID shown by `hol-guard approvals`; do not invent one.
 
 Never auto-approve a queued request. If the user explicitly decides after reviewing the risk and scope, use the Guard-owned approval commands rather than changing harness policy files directly.
 
