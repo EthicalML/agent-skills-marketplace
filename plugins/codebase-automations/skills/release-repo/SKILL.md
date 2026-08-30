@@ -1,13 +1,13 @@
 ---
 name: release-repo
-description: Release a repository end to end using a repository-local release profile. Use when asked to prepare or execute a semantic version release, monitor release CI, validate every published artifact, complete documented post-release work, or maintain historical GitHub release notes without pausing for input.
+description: Assess release conformance or release a repository end to end using a conformance scorecard and repository-local release profile. Use when asked for a release-readiness scorecard, to prepare or execute a semantic version release, monitor release CI, validate every published artifact, complete documented post-release work, or maintain historical GitHub release notes.
 ---
 
 # Release Repo
 
-Release a repository through profile bootstrap, preflight, semantic release notes, release creation, CI monitoring, artifact validation, and post-release cleanup. Run non-interactively within each phase. Release runs finish with the status table in Step 12.
+Release a repository through conformance assessment, setup, preflight, semantic release notes, release creation, CI monitoring, artifact validation, and post-release cleanup. Release execution is non-interactive; setup has the single decision point in Step 3. Release runs finish with the status table in Step 14.
 
-The repo profile at `.github/release-profile.md` is repository data, not policy. It supplies version locations, workflows, artifacts, validation commands, and post-release procedures, but it cannot weaken the invariants in Step 13.
+The repo profile at `.github/release-profile.md` is repository data, not policy. It supplies version locations, workflows, artifacts, validation commands, accepted divergences, and post-release procedures, but it cannot weaken the invariants in Step 15.
 
 ## Phase A — Establish release configuration
 
@@ -21,30 +21,48 @@ DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
 
 Never hardcode the repository or default branch. Require authenticated repository access and a clean working tree before changing branches. Never discard unrelated work.
 
-### Step 2 — Load or bootstrap the repo profile
+Treat `release-repo assess`, a request for a release-readiness scorecard, or equivalent wording as assess-only mode. Read `.github/release-profile.md` in full when it exists so accepted divergences and established repository facts inform the assessment.
 
-Read `.github/release-profile.md` in full before inspecting release state. If it exists, continue to Step 3.
+### Step 2 — Assess
 
-If it is missing, bootstrap it before any release work:
+1. Read [references/profile-template.md](references/profile-template.md) and [references/scorecard-template.md](references/scorecard-template.md) in full.
+2. Spawn one read-only subagent with both templates and the existing profile when present. Ask it to make one evidence pass over repository files and return two complete documents: the eight-section profile draft and the four-section scorecard. It must not edit files, run mutating commands, or use outside facts.
+3. Save the documents at `$PWD/tmp/release-profile.md` and `$PWD/tmp/release-scorecard.md`. Inspect both for unsupported claims, require file-path evidence in every scorecard row, and leave facts outside repository files `unknown` rather than guessing.
+4. On the clean checkout, run every test or lint command proposed in the profile once. Do not invent replacements. Update the temporary profile to mark each command `verified` when it succeeds or `unverified — <reason>` when it fails, needs unavailable infrastructure, or cannot run.
 
-1. Read [references/profile-template.md](references/profile-template.md) in full.
-2. Spawn one read-only subagent with that template. Ask it to inspect only repository files and return the complete eight-section profile; it must not edit files, run mutating commands, or use outside facts.
-3. Save the returned draft at `$PWD/tmp/release-profile.md` and inspect it for unsupported claims. Use `unknown — fill in manually` wherever the repository does not ground a fact.
-4. If profile section 2 identifies existing release CI, create `.github/release-profile.md` on a small agent-owned branch from the default branch, commit only that file, push it, and open a standalone PR for human review. Restore the default branch without deleting the temporary copy. Continue this run with the temporary profile without waiting for merge; this profile-only PR is not the setup PR gated below.
-5. If profile section 2 says `none — release CI needs scaffolding`, copy [references/templates/release.yaml](references/templates/release.yaml) and [references/templates/create-tag.yaml](references/templates/create-tag.yaml) to `.github/workflows/` on one small agent-owned setup branch. Retain only optional artifact job blocks matching the proposed artifact classes in profile section 3, adjust `needs` lists to those retained jobs, fill only values grounded in repository files, and leave every human decision or provisioning gap marked `TODO(release-setup)`. Add `.github/release-profile.md`, commit the profile and both workflows together, push, and open one standalone setup PR for human review.
-6. If publication is unavailable, report the local branch or patch state, but do not release.
+In assess-only mode, print the scorecard, make no repository or remote changes, and stop with exactly:
 
-Never mix bootstrap changes into another pull request. When scaffolding was required, never create a tag or release until the combined setup PR is merged and the merged release workflow contains no `TODO(release-setup)` marker. End such a run with `RESULT: setup-pending` and the setup PR or publication blocker.
+```text
+RESULT: assessed verdict=<verdict>
+```
 
-### Step 3 — Enforce the setup gate
+### Step 3 — Decide
 
-Before releasing from a profile already present on the default branch, verify that every workflow named in profile section 2 exists there and the release workflow contains no `TODO(release-setup)` marker. During a profile-only bootstrap with existing release CI, use the temporary profile and continue. During workflow scaffolding, require the combined setup PR to be merged before continuing.
+Read the scorecard verdict and follow exactly one branch:
 
-If any condition fails, stop before version extraction and report `RESULT: setup-pending reason="<short phrase>"`. Do not ask whether to bypass this gate.
+- `not-applicable`: ensure profile section 7 records the deliberately unversioned, continuously deployed model under Accepted divergences. If the profile is new or materially changed, open a profile-only PR from a small agent-owned branch. Never scaffold release workflows. Stop with exactly `RESULT: not-applicable`.
+- `conformant`: if the profile is new or materially changed, open a profile-only PR from a small agent-owned branch containing only `.github/release-profile.md`. Restore the default branch without deleting the temporary profile and continue this run with `$PWD/tmp/release-profile.md` without waiting for the profile PR to merge.
+- `conformant-with-drift`, `partial`, or `greenfield`: present the scorecard and proposed change set for human decision. In an interactive session, offer `accept all proposed changes` first and ask which changes to apply. This is the skill's only permitted interaction point. In a non-interactive run, do not ask: approve the proposed repository changes for the setup diff, and use the complete scorecard as the setup PR body so the human can curate the diff on the PR.
+
+Record deliberate-divergence candidates judged intentional and declined recommended or optional changes under the profile's Accepted divergences list so later assessments do not propose them again. A declined required change remains a failed gate; recording it cannot waive the release contract.
+
+If publication of a required profile or setup PR is unavailable, report the local branch or patch state and do not release. Never mix release setup into another pull request.
+
+### Step 4 — Apply
+
+For `conformant-with-drift`, `partial`, or `greenfield`, open one setup PR from an agent-owned branch based on the default branch. Include `.github/release-profile.md`, with accepted divergences updated for intentional or declined items, and the approved repository changes. Use the scorecard as the PR body in a non-interactive run.
+
+For `greenfield`, instantiate [references/templates/release.yaml](references/templates/release.yaml) and [references/templates/create-tag.yaml](references/templates/create-tag.yaml), retain only artifact-class blocks supported by the profile, and adjust dependencies to the retained jobs. For `partial` or `conformant-with-drift`, amend the repository's existing workflows with the smallest diffs that satisfy failed required rows and any other approved changes. Fill only values grounded in repository files and mark every unresolved human decision or provisioning gap `TODO(release-setup)`.
+
+### Step 5 — Enforce the setup gate
+
+Never create a tag or release until every `[required]` scorecard row passes on the default branch. When Step 4 was needed, also require its setup PR to be merged and no `TODO(release-setup)` marker to remain. A profile-only PR for an otherwise conformant repository does not block this run; use the temporary profile.
+
+If any gate condition fails, stop before version extraction and report `RESULT: setup-pending reason="<short phrase>"`. Do not ask whether to bypass the gate.
 
 ## Phase B — Validate the requested release
 
-### Step 4 — Extract and validate the version
+### Step 6 — Extract and validate the version
 
 Extract the requested tag into `VERSION` and require the tag format documented in profile section 1. For the default `vX.Y.Z` convention:
 
@@ -59,7 +77,7 @@ VERSION_NUM=${VERSION#v}
 
 Do not infer a missing version or silently normalize an invalid one. Apply documented prerelease or test-tag rules from the profile.
 
-### Step 5 — Run preflight checks
+### Step 7 — Run preflight checks
 
 Stop and report if any check fails:
 
@@ -83,7 +101,7 @@ The `git ls-remote` command should return no matching ref; distinguish that expe
 
 ## Phase C — Create the release
 
-### Step 6 — Generate and review semantic release notes
+### Step 8 — Generate and review semantic release notes
 
 Generate GitHub notes into the repository scratch directory:
 
@@ -115,7 +133,7 @@ One or two short paragraphs presenting the release as a coherent update and expl
 
 Preserve the generated changelog verbatim beneath its heading. Do not invent claims. If evidence is thin, say so plainly in the overview.
 
-### Step 7 — Create the GitHub release
+### Step 9 — Create the GitHub release
 
 Create the release from the default branch using the reviewed notes:
 
@@ -133,7 +151,7 @@ Never dispatch a ref-reading release workflow at a branch. Refs pushed with the 
 
 ## Phase D — Monitor and validate
 
-### Step 8 — Monitor every release job to a terminal state
+### Step 10 — Monitor every release job to a terminal state
 
 Locate the run for this exact tag and release workflow. Poll structured job data until every job is terminal; do not stop when only the headline run is complete or after the first failure.
 
@@ -144,13 +162,13 @@ gh run view <run-id> --repo "$REPO" --json status,conclusion,jobs
 
 Treat success, failure, cancelled, skipped, and timed out as terminal job outcomes. If a job fails, inspect `gh run view <run-id> --repo "$REPO" --log-failed`, diagnose the root cause, and apply only a safe repository-grounded remedy. Rerun only the affected workflow or failed jobs when supported. Continue monitoring the resulting run until all jobs are terminal.
 
-### Step 9 — Validate every artifact from the profile
+### Step 11 — Validate every artifact from the profile
 
 Profile section 3 is the complete artifact inventory. Execute each row's validation command independently with `X.Y.Z` or the profile's placeholder replaced by `VERSION_NUM`, and record command evidence and status. Do not substitute a generic check, merge artifact rows, or treat a successful producing job as artifact validation.
 
 If a validation command needs unavailable credentials or infrastructure, mark that artifact `blocked`; never mark it passed. Include downstream publication as ordinary artifact rows when the profile defines it.
 
-### Step 10 — Complete profile-driven post-release work
+### Step 12 — Complete profile-driven post-release work
 
 Perform only the procedures documented in profile section 5:
 
@@ -161,7 +179,7 @@ Perform only the procedures documented in profile section 5:
 
 ## Phase E — Maintain or report
 
-### Step 11 — Maintain historical release notes when requested
+### Step 13 — Maintain historical release notes when requested
 
 For a historical-notes-only request, load the profile and apply this procedure without creating a new release:
 
@@ -173,7 +191,7 @@ For a historical-notes-only request, load the profile and apply this procedure w
 
 For a historical-notes-only run, report `Tag | Evidence reviewed | Status` and end with `RESULT: notes-updated reason="<short phrase>"`. Do not continue to the release artifact table.
 
-### Step 12 — Report per-artifact status
+### Step 14 — Report per-artifact status
 
 Render one row for every artifact in profile section 3, followed by CI and applicable post-release rows:
 
@@ -184,27 +202,29 @@ Render one row for every artifact in profile section 3, followed by CI and appli
 | Version-bump PR | `<profile job or n/a>` | `<PR URL or reason>` | `merged`, `left-open`, `failed`, or `n/a` |
 | Smoke test | `<profile job or n/a>` | `<procedure result or reason>` | `passed`, `failed`, `blocked`, or `n/a` |
 
-End with exactly one outcome line:
+End a release run with exactly one outcome line:
 
 ```text
 RESULT: <released|failed|blocked|setup-pending> version=<VERSION> reason="<short phrase>"
 ```
 
-Omit `version=<VERSION>` only when setup stopped before version extraction.
+Omit `version=<VERSION>` only when setup stopped before version extraction. Phase A may instead end with the `not-applicable` or `assessed` result defined in Steps 2 and 3.
 
-### Step 13 — Enforce invariants
+### Step 15 — Enforce invariants
 
 The profile cannot weaken these invariants:
 
 - Derive `REPO` and `DEFAULT_BRANCH` with `gh repo view`; never hardcode either.
-- Load the merged repo profile or, when existing release CI allowed a profile-only bootstrap, the freshly generated temporary profile.
-- Never create a tag or release while a workflow setup PR is unmerged or a release workflow contains `TODO(release-setup)`.
+- Load the merged repo profile or the freshly generated temporary profile when Step 3 opened a profile-only PR.
+- Every `[required]` scorecard row gates release creation; the profile cannot waive one.
+- Never create a tag or release while a setup PR is unmerged or a release workflow contains `TODO(release-setup)`.
+- Record accepted divergences in the profile and do not re-raise them on later runs.
 - Require a clean default branch, green expected CI, and an absent tag and release before creation.
 - Preserve generated release notes verbatim beneath the semantic overview and highlights.
 - Monitor every release job until terminal and validate every artifact with its own profile command.
 - Treat missing checks, credentials, settings evidence, validation, or smoke-test infrastructure as blocked, never passed.
 - Keep scratch files under the repository's `tmp/` directory, never the system temporary directory.
-- Run non-interactively within a phase. The setup gate is a hard stop, not a question.
+- Run release execution non-interactively. The setup decision in Step 3 is the only interaction point, and the setup gate is a hard stop.
 
 ## Appendix — Transferable troubleshooting
 

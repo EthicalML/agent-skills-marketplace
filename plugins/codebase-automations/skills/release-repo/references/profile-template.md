@@ -1,8 +1,8 @@
 # Release Repo Profile — bootstrap template
 
-Generate a repo-local profile for the generic `release-repo` skill. The skill owns release policy: setup gating, preflight, semantic release notes over a generated changelog, release creation, CI monitoring, artifact validation, and post-release reporting. The profile supplies repository data only.
+Generate a repo-local profile for the generic `release-repo` skill. The skill owns release policy: conformance scoring, setup gating, preflight, semantic release notes over a generated changelog, release creation, CI monitoring, artifact validation, and post-release reporting. The profile supplies repository data only.
 
-Work only from repository contents. Do not invent facts. If a fact cannot be grounded in a file you read, write `unknown — fill in manually`. A repository with no release process is a valid outcome; record that explicitly so the skill can scaffold workflow templates.
+Work only from repository contents. Do not invent facts. If a fact cannot be grounded in a file you read, write `unknown — fill in manually`. A repository with no release process is a valid outcome. Distinguish a greenfield versioned-release intent from a deliberately unversioned continuous-deployment model; only the former needs workflow scaffolding.
 
 Return one Markdown document with exactly these eight sections:
 
@@ -12,7 +12,7 @@ Document the tag format, current-version locations, test-tag or prerelease conve
 
 ## 2. Release workflows & jobs
 
-List existing release-related files under `.github/workflows/`, their triggers, every job a release executes, and any reusable workflows they call. Identify the release workflow filename the skill should monitor. If none exist, write exactly `none — release CI needs scaffolding`.
+List existing release-related files under `.github/workflows/`, their triggers, every job a release executes, any reusable workflows they call, and the concrete test and lint commands that gate publication. Identify the release workflow filename the skill should monitor. If none exist for a repository that intends versioned releases, write exactly `none — release CI needs scaffolding`. For a deliberately unversioned repository, describe the continuous-deployment workflow instead.
 
 ## 3. Artifacts & validation
 
@@ -35,6 +35,10 @@ List names, never values, of required secrets, environments, and trusted-publish
 ## 7. Repo-specific gotchas
 
 Record release constraints from agent instructions and documentation, including ordering dependencies, known race conditions, environment quirks, and manual steps. Cite every item. Do not repeat generic skill policy.
+
+### Accepted divergences
+
+List intentional departures from recommended or optional contract requirements, including changes a human declined during setup, with the repository evidence and decision rationale for each. Record a deliberately unversioned continuous-deployment model here. Write `none` when there are no accepted divergences. Accepted divergences cannot waive required release-contract rows.
 
 ## 8. Confidence notes
 
