@@ -1,7 +1,7 @@
 {
   "name": "workflow-automations",
   "description": "Automate practical workflows: scripted website walkthrough captures, skill-driven Python agent harnesses for OpenAI-compatible endpoints, and local Streamlit data apps with browser-driven verification.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "keywords": [
     "browser",
     "capture",
