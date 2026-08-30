@@ -1,0 +1,75 @@
+name: Create Release Tag
+
+# This workflow supports sessions that cannot push tags directly. A ref pushed
+# with the built-in GITHUB_TOKEN does not trigger another workflow. After this
+# workflow succeeds, dispatch release.yaml explicitly against the created tag:
+#
+#   gh workflow run release.yaml --ref v<version>
+#
+# release.yaml reads the version from its ref, so tag-ref dispatch behaves like
+# a tag push. Dispatching release.yaml at a branch fails its validation job.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version without the leading v, for example 1.2.3
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  create_tag:
+    name: Create annotated tag
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+
+      - name: Validate semantic version
+        shell: bash
+        run: |
+          VERSION="${{ inputs.version }}"
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid version: $VERSION (expected X.Y.Z)"
+            exit 1
+          fi
+
+      - name: Require an absent tag
+        shell: bash
+        run: |
+          TAG="v${{ inputs.version }}"
+          git fetch origin --tags
+          if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
+            echo "::error::Tag $TAG already exists"
+            exit 1
+          fi
+
+      - name: Create and push annotated tag
+        shell: bash
+        run: |
+          TAG="v${{ inputs.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Release $TAG"
+          git push origin "$TAG"
+
+      - name: Record next command
+        shell: bash
+        run: |
+          TAG="v${{ inputs.version }}"
+          {
+            echo "### Tag created: \`$TAG\`"
+            echo
+            echo "The built-in GITHUB_TOKEN does not trigger release.yaml. Dispatch it at the tag:"
+            echo
+            echo '\`\`\`shell'
+            echo "gh workflow run release.yaml --ref $TAG"
+            echo '\`\`\`'
+          } >> "$GITHUB_STEP_SUMMARY"

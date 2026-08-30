@@ -1,0 +1,224 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+  # Dispatch this workflow against a tag, never a branch. Every job reads the
+  # version from the ref so dispatching at a tag matches a tag-push run.
+  # This path supports sessions that can dispatch workflows but cannot push tags.
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    name: Validate release ref
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Require a semantic version tag
+        id: version
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF" != refs/tags/* ]]; then
+            echo "::error::Run this workflow against a tag ref, not $GITHUB_REF"
+            exit 1
+          fi
+          TAG=${GITHUB_REF#refs/tags/}
+          if ! [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Invalid release tag: $TAG (expected vX.Y.Z)"
+            exit 1
+          fi
+          VERSION=${TAG#v}
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "Release version: $VERSION"
+
+  tests:
+    name: Tests
+    needs: validate
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Run repository test entrypoint
+        # TODO(release-setup): Replace this placeholder with the repository's documented test command.
+        run: 'echo "Configure the repository test entrypoint" && exit 1'
+
+  # OPTIONAL BLOCK: container image. Remove unless the profile detects this class.
+  container_images:
+    name: Publish container images
+    needs: [validate, tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Log in to container registry
+        # TODO(release-setup): Set the registry host and provision the documented credential secrets.
+        uses: docker/login-action@v3
+        with:
+          registry: registry.example.invalid
+          username: ${{ secrets.REGISTRY_USERNAME }}
+          password: ${{ secrets.REGISTRY_TOKEN }}
+      - name: Build and publish
+        # TODO(release-setup): Set each detected image name, context, Dockerfile, and any latest-tag policy.
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: registry.example.invalid/owner/image:${{ needs.validate.outputs.version }}
+
+  # OPTIONAL BLOCK: package. Remove unless the profile detects this class.
+  package_publish:
+    name: Publish package
+    needs: [validate, tests]
+    runs-on: ubuntu-latest
+    # Trusted publishing should use an environment and OIDC instead of a stored API token.
+    # TODO(release-setup): Configure the package index's trusted publisher with this exact workflow filename and environment.
+    environment: release-package
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build package
+        # TODO(release-setup): Install the package toolchain, set the tag-derived version, and build from the detected package directory.
+        run: 'echo "Configure the package build" && exit 1'
+      - name: Publish package
+        # TODO(release-setup): Replace this placeholder with the package index's OIDC-capable publish action or command.
+        run: 'echo "Configure trusted package publishing" && exit 1'
+
+  # OPTIONAL BLOCK: docs/pages. Remove unless the profile detects this class.
+  docs_pages:
+    name: Publish docs to Pages
+    needs: [validate, tests]
+    runs-on: ubuntu-latest
+    # TODO(release-setup): Confirm Pages is enabled and this environment matches the repository's deployment protection rules.
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build docs
+        # TODO(release-setup): Run the documented docs build with the version and public base path required by this repository.
+        run: 'echo "Configure the docs build" && exit 1'
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # TODO(release-setup): Set the generated static-site directory.
+          path: docs-site-placeholder
+      - name: Deploy Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # OPTIONAL BLOCK: chart. Remove unless the profile detects this class.
+  chart_publish:
+    name: Package and publish chart
+    needs: [validate, tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+      - name: Package chart
+        # TODO(release-setup): Set the detected chart directory and update any release image tags before packaging.
+        run: |
+          mkdir -p release-assets
+          helm package chart-directory-placeholder \
+            --version "${{ needs.validate.outputs.version }}" \
+            --app-version "${{ needs.validate.outputs.version }}" \
+            --destination release-assets
+      - name: Publish chart
+        # TODO(release-setup): Publish to the profile's chart registry or repository.
+        run: 'echo "Configure the chart destination" && exit 1'
+      - name: Upload chart for release assembly
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-asset-chart
+          path: release-assets/*.tgz
+          if-no-files-found: error
+
+  # OPTIONAL BLOCK: GitHub release. Retain when the profile detects this class.
+  # TODO(release-setup): Prune needs to validate, tests, and retained artifact jobs. A chart or package asset-producing job must finish before this job.
+  github_release:
+    name: Assemble GitHub release
+    needs: [validate, tests, container_images, package_publish, docs_pages, chart_publish]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Download release assets
+        # TODO(release-setup): Remove this step when no retained job uploads release assets.
+        uses: actions/download-artifact@v4
+        with:
+          pattern: release-asset-*
+          path: release-assets
+          merge-multiple: true
+      - name: Attach assets to the existing release
+        # The release-repo skill creates the release and semantic notes before this workflow runs.
+        # TODO(release-setup): Set the asset glob produced by retained jobs, or replace this with a release verification step when there are no assets.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" release-assets/* --clobber
+
+  bump_version:
+    name: Open next development version PR
+    needs: [validate, github_release]
+    if: ${{ needs.github_release.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      RELEASE_VERSION: ${{ needs.validate.outputs.version }}
+    steps:
+      - name: Checkout default branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - name: Calculate next development version
+        id: next
+        shell: bash
+        run: |
+          VERSION="${{ needs.validate.outputs.version }}"
+          IFS=. read -r MAJOR MINOR PATCH <<< "$VERSION"
+          NEXT_VERSION="$MAJOR.$MINOR.$((PATCH + 1))-dev"
+          echo "version=$NEXT_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Update version files
+        # TODO(release-setup): Apply the profile's next-development-version format to every documented version file.
+        run: 'echo "Configure version-file updates for ${{ steps.next.outputs.version }}" && exit 1'
+      - name: Open version bump PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: release/bump-${{ steps.next.outputs.version }}
+          commit-message: 'chore: bump version to ${{ steps.next.outputs.version }}'
+          title: 'chore: bump version to ${{ steps.next.outputs.version }}'
+          body: Automated next-development-version bump after release `${{ github.ref_name }}`.
+          delete-branch: true
