@@ -1,0 +1,23 @@
+.PHONY: check setup run watch clean
+PORT ?= 8501
+
+check:
+	@command -v uv >/dev/null 2>&1 || { \
+	  echo "uv not found. Install it first:"; \
+	  echo "  admin:    brew install uv   (or: curl -LsSf https://astral.sh/uv/install.sh | sh)"; \
+	  echo "  no-admin: pixi global install uv"; \
+	  exit 1; }
+
+setup: check
+	uv venv --seed
+	uv pip install -e .
+
+run: check
+	uv run streamlit run app.py --server.port $(PORT) --server.headless true
+
+# watch: same as run, but auto-reruns whenever a source file is saved
+watch: check
+	uv run streamlit run app.py --server.port $(PORT) --server.headless true --server.runOnSave true
+
+clean:
+	rm -rf .venv

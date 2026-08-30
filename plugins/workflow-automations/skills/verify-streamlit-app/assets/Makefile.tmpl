@@ -1,0 +1,26 @@
+.PHONY: setup start-app verify test clean
+PORT ?= 8501
+URL ?= http://localhost:$(PORT)
+
+setup:
+	uv pip install playwright pytest
+	uv run playwright install chromium
+
+# Starts the app and blocks until the port accepts connections, so `verify`
+# cannot race the boot.
+start-app:
+	uv run streamlit run app.py --server.port $(PORT) --server.headless true & \
+	for i in $$(seq 1 60); do \
+	  curl -sf -o /dev/null $(URL) && exit 0; \
+	  sleep 1; \
+	done; \
+	echo "app did not come up on $(URL)"; exit 1
+
+verify:
+	uv run python verify.py $(URL)
+
+test:
+	APP_URL=$(URL) uv run pytest tests_e2e_example.py
+
+clean:
+	rm -rf tmp/*.png
