@@ -19,6 +19,10 @@
     {
       "name": "agent-harness",
       "source": "./plugins/agent-harness"
+    },
+    {
+      "name": "dependabot-autopilot",
+      "source": "./plugins/dependabot-autopilot"
     }
   ]
 }

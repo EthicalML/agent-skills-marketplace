@@ -1,0 +1,7 @@
+{
+  "name": "dependabot-autopilot",
+  "description": "Diagnose, fix, verify, and safely merge individual or batched Dependabot pull requests using repository-specific profiles.",
+  "version": "0.1.0",
+  "keywords": ["dependabot", "dependencies", "ci", "automation"],
+  "skills": ["./skills/"]
+}

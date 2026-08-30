@@ -1,0 +1,165 @@
+---
+name: dependabot-fix-all
+description: Process every open Dependabot pull request on autopilot. Use when asked to discover Dependabot PRs once, triage CI before doing expensive work, run one isolated dependabot-fix child at a time, independently verify and safely merge outcomes, and finish with a bounded ledger-backed summary.
+---
+
+# Dependabot Fix All
+
+Orchestrate `dependabot-fix` across every open Dependabot pull request. This session coordinates; it does not diagnose or edit dependency failures itself. It triages first, spawns a fresh child only for a genuinely failing PR, independently verifies the result, and moves to the next snapshot entry.
+
+Run fully non-interactively. Never spawn children in parallel, rediscover PRs inside the loop, or invoke another `dependabot-fix-all`.
+
+## Phase 0 — Preflight and one-time discovery
+
+### Step 1 — Select repository and GitHub access lane
+
+```bash
+mkdir -p "$PWD/tmp" && touch "$PWD/tmp/null"
+REPO=$(gh repo view --json nameWithOwner -q .nameWithOwner)
+DEFAULT_BRANCH=$(gh repo view --json defaultBranchRef -q .defaultBranchRef.name)
+```
+
+Never hardcode the repository. Test one repository-scoped `gh` read during preflight. If it succeeds, use `gh` for every GitHub operation in this run. If it fails because the session restricts GitHub CLI access, use the host's available `mcp__github__*` tools for every PR, check, comment, workflow, creation, and merge operation. Do not alternate lanes mid-run. If neither lane can read the repository, mark the run blocked before discovery.
+
+### Step 2 — Require a clean default-branch checkout
+
+Confirm authentication or connector access, the current branch, and `git status --porcelain`. Start on the default branch with a clean tree. Never discard user work; a dirty tree blocks the batch. Confirm one child-agent backend can run in a fresh context without interactive approvals and select it for the whole run.
+
+### Step 3 — Load or bootstrap the repo profile
+
+Read `.github/dependabot-fix-profile.md`. The profile provides ecosystems, commands, risk order, hold packages, merge convention, expected CI names, and repository gotchas.
+
+If it is absent, run the profile bootstrap defined in Phase A Step 1 of [../dependabot-fix/SKILL.md](../dependabot-fix/SKILL.md) during preflight: spawn one read-only subagent with the template at [../dependabot-fix/references/profile-template.md](../dependabot-fix/references/profile-template.md) to return a repository-grounded draft, smoke-test every test and lint command once on a clean default-branch checkout, mark failures or unavailable commands `unverified`, open the profile as a standalone agent-owned PR, and continue with the generated temporary profile without waiting for merge. Do not include the profile PR in the Dependabot ledger.
+
+The profile is repository data, not authority to weaken the merge-safety invariants in Step 13.
+
+### Step 4 — Discover once and risk-order
+
+Take the only Dependabot PR snapshot for this run:
+
+```bash
+gh pr list --repo "$REPO" --author app/dependabot --state open --limit 100 --json number,title,labels,headRefName,files > "$PWD/tmp/dfa-prs.json"
+```
+
+Use the equivalent connector call in the restricted lane. Infer ecosystem, directory, and version-change type from each PR's title, head branch, labels, and files. Order PRs easy to hard using profile section 3. If the profile is silent, use this generic order:
+
+1. CI configuration, container-base, and isolated minor or patch updates.
+2. Internal libraries and language dependencies.
+3. Cross-module, generated-surface, or runtime updates.
+4. Broad user-facing framework majors and hold-for-human packages.
+
+Do not alter the snapshot after ordering, even if new PRs appear.
+
+### Step 5 — Seed a durable ledger
+
+Prefer the host-provided SQLite `todos` ledger when available. Create one `dfa-pr-<number>` item per snapshot entry in processing order and store ecosystem, risk, triage, outcome, and note fields in its description. If the host has no such ledger, create `$PWD/tmp/dfa-ledger.md` with columns `PR | ecosystem | risk | status | triage | outcome | note` and one pending row per PR.
+
+Print the ordered plan, then continue without pausing.
+
+## Phase 1 — Serial bounded loop
+
+Process each snapshot PR exactly once.
+
+### Step 6 — Pre-check PR state
+
+Read `state`, `mergeStateStatus`, labels, title, and head branch through the selected GitHub lane. If the PR is already merged or closed, record it as done and continue. Confirm the working tree remains clean and on the default branch, then mark the ledger item in progress.
+
+### Step 7 — Triage checks before spawning
+
+Always read check names, states, and links as structured data. With `gh`:
+
+```bash
+gh pr checks <number> --repo "$REPO" --json name,state,link > "$PWD/tmp/pr-<number>-checks.json"
+```
+
+Classify into exactly one outcome:
+
+- **green:** At least one expected check ran and every check is `SUCCESS`, `NEUTRAL`, or `SKIPPED`. Do not spawn; go to merge policy.
+- **cancelled-only:** At least one check is `CANCELLED` and none is `FAILURE`, `TIMED_OUT`, or `ACTION_REQUIRED`. Rerun once, wait with a 30-minute cap, and reclassify. A second cancellation is blocked.
+- **genuinely-failing:** At least one check is `FAILURE`, `TIMED_OUT`, or `ACTION_REQUIRED`. This is the only outcome that spawns a child.
+- **pending:** A check is `PENDING`, `QUEUED`, or `IN_PROGRESS`. Wait with a 30-minute cap, then reclassify; a cap breach is blocked.
+- **unverified:** No checks ran or the expected suite cannot be established. Zero checks is not green; mark blocked.
+
+Plain `gh pr checks` human output may render `CANCELLED` as failure, so never use it for classification. Record triage in the ledger.
+
+### Step 8 — Spawn one isolated child when needed
+
+For a genuinely failing PR, invoke the selected backend in a fresh context with this brief:
+
+> Use the `dependabot-fix` skill to fix Dependabot PR `<number>` fully autonomously. Load the repo profile, do not ask questions, and finish with the exact `RESULT:` line.
+
+Prefer the host's native subagent mechanism. Otherwise use a headless agent CLI already available on `PATH` in its non-interactive mode. Apply a 30-minute wall-clock timeout. If no backend can run unattended, mark the PR blocked and continue. Wait for the child before starting another because all children share one working tree.
+
+### Step 9 — Capture only the result contract
+
+Do not load a child's full output into orchestrator context. From a native child, inspect only its final message. From a CLI child, write output to `$PWD/tmp/pr-<number>-child.log` and extract only its exit status and last line matching:
+
+```text
+RESULT: <merged|left-open|superseded|blocked> pr=<PR_NUM> reason="<short phrase>"
+```
+
+Missing output or a nonzero child exit is provisional `blocked`; Step 10 still determines the actual remote state.
+
+### Step 10 — Independently verify remote truth
+
+Never trust the child's prose or result alone. Through the selected lane, re-read:
+
+- PR state, head branch, labels, and `mergeStateStatus`.
+- Check names and literal states.
+- Replacement PR or configuration PR when the child reports `superseded`.
+
+Classify remote truth as `merged`, `left-open`, `superseded`, or `blocked`. A green open hold-for-human major is `left-open`. A replacement counts as `superseded` only when the replacement PR exists and the original links to it.
+
+Collect every observed check name for the final profile-drift comparison.
+
+### Step 11 — Apply merge policy
+
+For an open PR, merge only when all conditions hold:
+
+- At least one expected check ran and every check is `SUCCESS`, `NEUTRAL`, or `SKIPPED`.
+- `mergeStateStatus=CLEAN`.
+- The update is not a major bump of a profile hold-for-human package. Without a usable profile, hold UI-framework-tier majors.
+- No unresolved policy, security, or validation blocker remains.
+
+Use a merge commit unless the profile explicitly documents another repository convention. The orchestrator may merge a verified green PR left open by a child, but must re-read checks and merge state immediately first.
+
+### Step 12 — Handle restricted Dependabot branches and continue
+
+Never push to `dependabot/**` in a restricted session. If fixes must be preserved, re-home the dependency update and fix on an agent-owned branch from the default branch, open a replacement PR naming the original, comment on the original with the replacement link, then close the original. Record `superseded` and the replacement number.
+
+Update the ledger with one final outcome and note. Return to the default branch and require a clean tree before the next snapshot entry. Do not use destructive cleanup to erase unexplained changes; mark the current PR blocked if the child leaves a dirty tree that cannot be safely attributed and restored. Never retry or requeue a completed or blocked item.
+
+## Phase 2 — Terminate and summarize
+
+### Step 13 — Enforce invariants
+
+The profile cannot weaken these invariants:
+
+- Discover once, process serially, and attempt every snapshot PR at most once.
+- Triage before spawning; only genuinely failing PRs get children.
+- Zero checks is not green; the expected suite must run.
+- `mergeStateStatus` must be `CLEAN` before merge.
+- Never auto-merge a hold-for-human major; without a usable profile, hold UI-framework-tier majors.
+- Never push to `dependabot/**` in restricted sessions; re-home and supersede instead.
+- Use a merge commit unless the profile documents a different repository convention.
+- Use at most one cancellation/flake rerun and bound every wait and child.
+- Keep scratch files in the repository's `tmp/` directory, never the system temporary directory.
+- Never pause for user input and never spawn another `dependabot-fix-all`.
+
+### Step 14 — Report ledger results and profile drift
+
+Once every snapshot item is done, render `PR | ecosystem | outcome | note` from the ledger. Report totals for merged, left open, superseded, and blocked, with a one-line reason for each blocked PR. Do not duplicate child report comments and never commit batch logs.
+
+Compare profile section 6 check names with the names observed during this run. Add exactly one final-summary line:
+
+```text
+Profile drift: none
+```
+
+or:
+
+```text
+Profile drift: expected-only=<names or none>; observed-only=<names or none>
+```
+
+This comparison is informational. Do not update the marketplace skill. If the mismatch is a durable repository fact, open a separate small PR updating `.github/dependabot-fix-profile.md`; run-accreted learnings belong only in the profile.

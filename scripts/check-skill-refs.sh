@@ -13,7 +13,7 @@ path = pathlib.Path(sys.argv[1])
 text = path.read_text(encoding="utf-8")
 spans = re.findall(r"`([^`\n]+)`", text)
 spans += re.findall(r"\]\(([^)]+)\)", text)
-pattern = re.compile(r"(?<![A-Za-z0-9_])(?:\./|assets/|docs/|scripts/|references/)[A-Za-z0-9._/-]+")
+pattern = re.compile(r"(?<![A-Za-z0-9_])(?:\.\./|\./|assets/|docs/|scripts/|references/)[A-Za-z0-9._/-]+")
 references = set()
 for span in spans:
     for match in pattern.findall(span):
