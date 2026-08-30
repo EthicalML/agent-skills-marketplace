@@ -12,6 +12,18 @@ This repository is an open-source marketplace of portable agent skills and plugi
 | `workflow-automations` | `site-capture`, `create-agent-harness`, `create-streamlit-app`, `verify-streamlit-app`, `new-project`, `rpi-research`, `rpi-adrs`, `rpi-plan`, `rpi-implement` | Run research-to-implementation projects with explicit gates, record scripted website walkthroughs, build skill-driven Python agents, and scaffold local Streamlit data apps with browser verification. |
 | `codebase-automations` | `dependabot-fix`, `dependabot-fix-all`, `release-repo` | Diagnose and safely merge Dependabot pull requests, or assess release conformance and run profile-driven releases with artifact validation. |
 
+## The RPI workflow
+
+The `workflow-automations` plugin packages a research-to-implementation (RPI) workflow as five stage skills. The happy path:
+
+1. `new-project <scope>` — records the request under `adr/<NNN>-<name>/` in your repo.
+2. `rpi-research` — propose research areas, approve the gate, findings land from parallel investigations.
+3. `rpi-adrs` — approve the ADR scope, then decide each design decision one by one from options with tradeoffs and a recommendation.
+4. `rpi-plan` — approve a minimal plan of reviewable PRs with manual-first verification.
+5. `rpi-implement` — PR by PR with your review between each, verification run eagerly, learnings captured as work progresses.
+
+The files are the state: resume anytime in a fresh session and the skills work out the next step from what exists under `adr/<NNN>-<name>/`.
+
 ## Installation
 
 The standard way to install is to point your AI assistant (Claude Code or Copilot CLI) at [INSTALL.md](INSTALL.md) — it is an assistant-driven install gate that checks prerequisites, registers the marketplace, and installs the selected plugins:

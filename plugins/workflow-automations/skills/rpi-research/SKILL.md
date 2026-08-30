@@ -27,7 +27,7 @@ After explicit approval in the main session, change the gate to `Status: approve
 
 ## 4. Run the investigations
 
-Fan approved independent areas out to parallel subagents. Give each a bounded question and exact output paths; keep gate decisions in the main session. A small effort may use one investigation and one findings document.
+A small effort may use one investigation and one findings document, done directly in the main session. When several approved areas are independent, fan them out to parallel subagents, giving each a bounded question and exact output paths; gate decisions stay in the main session.
 
 For area `<n>`, write:
 

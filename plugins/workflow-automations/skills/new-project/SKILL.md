@@ -51,7 +51,7 @@ Create only the directories needed now; later skills add their own files.
 
 Write `adrs/000-initial-request.md` with a concise normalized scope, acceptance signals, open questions, and a final `Verbatim request` section containing the user's request unchanged. Keep private or sensitive material out of documents intended for a public repository.
 
-Show the document to the user, incorporate any corrections, and then commit this document alone with a comprehensive conventional commit, such as `docs(rpi): capture initial request for <name>`.
+Show `adrs/000-initial-request.md` to the user, incorporate any corrections, and then commit this document alone with a comprehensive conventional commit, such as `docs(rpi): capture initial request for <name>`.
 
 ## 5. Stop at the handover
 
