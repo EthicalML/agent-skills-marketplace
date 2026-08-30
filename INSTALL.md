@@ -35,7 +35,7 @@ Install the **default set** unless the user opts out. Confirm the list with them
 
 **Default set:**
 
-- `dev-utilities` — skill authoring (`writing-skills`), code-change walkthroughs (`explain-code-walkthrough`), and cross-harness instruction-file standardization (`standardize-agent-instructions`)
+- `dev-utilities` — skill authoring (`writing-skills`), agent instruction content (`writing-agents-md`), code-change walkthroughs (`explain-code-walkthrough`), and cross-harness instruction-file standardization (`standardize-agent-instructions`)
 - `site-capture` — scripted browser capture of a website as video or GIF
 - `agent-harness` — build a skill-driven Python agent (`create-agent-harness`) against any OpenAI-compatible endpoint
 
