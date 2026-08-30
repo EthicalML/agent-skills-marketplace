@@ -40,4 +40,4 @@ Contributions are welcome through pull requests. Read [CONTRIBUTING.md](CONTRIBU
 
 ## License
 
-This marketplace is available under the [MIT License](LICENSE).
+This marketplace is available under the [Apache License 2.0](LICENSE).
