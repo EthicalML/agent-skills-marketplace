@@ -9,7 +9,7 @@ Work only inside the selected `adr/<NNN>-<name>/`. The files are the workflow st
 
 ## 1. Resume from the files
 
-Read the initial request, approved research gate, findings, existing ADR files, and relevant code. Summarize the current position and offer the next unfinished step. If the user does not choose it, stop.
+Read the initial request, approved research gate, findings, existing ADR files, and relevant code. Summarize the current position and offer the next unfinished step. If the user does not choose it, stop. If the user has just invoked this skill and the stage has no files yet, that invocation is the choice: proceed directly to the next step without asking again.
 
 Treat `adrs/proposed-adrs.md` as approved only when it says `Status: approved`. All gates and decision walks run in the main session, never in subagents.
 

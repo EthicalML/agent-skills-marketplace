@@ -9,7 +9,7 @@ Work only inside the selected `adr/<NNN>-<name>/`. The files are the workflow st
 
 ## 1. Resume from the files
 
-Read `adrs/000-initial-request.md`, then inspect `research/` and relevant repository code. Summarize what exists and offer the next unfinished step. If the user does not choose it, stop.
+Read `adrs/000-initial-request.md`, then inspect `research/` and relevant repository code. Summarize what exists and offer the next unfinished step. If the user does not choose it, stop. If the user has just invoked this skill and the stage has no files yet, that invocation is the choice: proceed directly to the next step without asking again.
 
 Treat a gate as approved only when its file says `Status: approved`. Gates run in the main session, never in a subagent.
 
