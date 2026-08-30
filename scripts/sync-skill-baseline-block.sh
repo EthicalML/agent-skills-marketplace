@@ -87,7 +87,29 @@ insert_block() {
   local destination=$2
   local plugin=$3
 
-  if grep -q '^# ' "$source"; then
+  if [ "$(head -n 1 "$source")" = '---' ]; then
+    if ! awk -v template="$TEMPLATE" -v plugin="$plugin" '
+      function print_block( line) {
+        while ((getline line < template) > 0) {
+          gsub(/<plugin>/, plugin, line)
+          print line
+        }
+        close(template)
+      }
+      NR > 1 && !inserted && $0 == "---" {
+        print; print ""; print_block(); print ""; inserted = 1; after = 1; next
+      }
+      after && $0 == "" { next }
+      after { after = 0 }
+      { print }
+      END {
+        if (!inserted) exit 3
+      }
+    ' "$source" > "$destination"; then
+      echo "ERROR: $source has no closing frontmatter marker" >&2
+      return 1
+    fi
+  else
     awk -v template="$TEMPLATE" -v plugin="$plugin" '
       function print_block( line) {
         while ((getline line < template) > 0) {
@@ -96,56 +118,11 @@ insert_block() {
         }
         close(template)
       }
-      !inserted && /^# / { print; print ""; print_block(); print ""; inserted = 1; after = 1; next }
-      after && $0 == "" { next }
-      after { after = 0 }
-      { print }
+      BEGIN { print_block(); print ""; leading = 1 }
+      leading && $0 == "" { next }
+      { leading = 0; print }
     ' "$source" > "$destination"
-    return
   fi
-
-  awk -v template="$TEMPLATE" -v plugin="$plugin" '
-    function print_block( line) {
-      while ((getline line < template) > 0) {
-        gsub(/<plugin>/, plugin, line)
-        print line
-      }
-      close(template)
-    }
-    NR == 1 && $0 == "---" { frontmatter = 1 }
-    frontmatter && NR > 1 && $0 == "---" {
-      print; print ""; print_block(); print ""; inserted = 1; after = 1; frontmatter = 0; next
-    }
-    after && $0 == "" { next }
-    after { after = 0 }
-    { print }
-    END {
-      if (!inserted) exit 3
-    }
-  ' "$source" > "$destination" || {
-    echo "ERROR: $source has neither an H1 nor closing frontmatter" >&2
-    return 1
-  }
-}
-
-refresh_block() {
-  local source=$1
-  local destination=$2
-  local plugin=$3
-  awk -v start="$START" -v end="$END" -v template="$TEMPLATE" -v plugin="$plugin" '
-    function print_block( line) {
-      while ((getline line < template) > 0) {
-        gsub(/<plugin>/, plugin, line)
-        print line
-      }
-      close(template)
-    }
-    $0 == start { print_block(); replacing = 1; next }
-    $0 == end { replacing = 0; after = 1; next }
-    after && $0 == "" { next }
-    after { print ""; after = 0 }
-    !replacing { print }
-  ' "$source" > "$destination"
 }
 
 skills=(plugins/*/skills/*/SKILL.md)
@@ -190,11 +167,12 @@ for file in "${skills[@]}"; do
       cp "$file" "$destination"
     fi
   else
+    candidate_source=$file
     if [ "$file_start_count" -eq 1 ]; then
-      refresh_block "$file" "$destination" "$plugin"
-    else
-      insert_block "$file" "$destination" "$plugin"
+      candidate_source="$destination.stripped"
+      strip_block "$file" "$candidate_source"
     fi
+    insert_block "$candidate_source" "$destination" "$plugin"
   fi
 
   if ! cmp -s "$file" "$destination"; then
