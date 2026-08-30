@@ -1,7 +1,7 @@
 {
   "name": "workflow-automations",
-  "description": "Automate practical workflows: scripted website walkthrough captures, skill-driven Python agent harnesses for OpenAI-compatible endpoints, and local Streamlit data apps with browser-driven verification.",
-  "version": "0.4.0",
+  "description": "Automate practical workflows: RPI research-to-implementation projects, scripted website walkthrough captures, skill-driven Python agent harnesses, and local Streamlit apps with browser-driven verification.",
+  "version": "0.5.0",
   "keywords": [
     "browser",
     "capture",
@@ -13,7 +13,11 @@
     "openai-compatible",
     "streamlit",
     "polars",
-    "playwright"
+    "playwright",
+    "research",
+    "adr",
+    "planning",
+    "implementation"
   ],
   "skills": [
     "./skills/"
