@@ -68,3 +68,13 @@ You can verify the quality of the skill itself by running a blind subagent with 
 Then review the token consumption, the time spent, and the transcript to understand where it got stuck, where it re-read files too many times, and where things fell apart.
 
 A handful of these runs improve the quality of the skill more than any agentic passes could. Especially when running them in cheaper sonnet models.
+
+## 6. Add a human feedback loop when useful
+
+Optionally add a final step that tells the agent to:
+
+1. Retrospect on retries, manual fixes, unexpected failures, and reusable knowledge from the run.
+2. Send fixes of a couple of lines upstream as a pull request.
+3. Put anything bigger into one issue per session, with runtime context, the exact command, the error, and reproduction steps.
+
+Recommend this for skills whose users cannot judge defects themselves. It costs a little context on every run, so make it a judgement call for each skill.

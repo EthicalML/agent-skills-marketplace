@@ -1,7 +1,7 @@
 {
   "name": "dev-utilities",
   "description": "Utilities for writing skills, writing and trimming agent instruction files, explaining code changes, and standardizing agent instructions across development tools.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "keywords": ["skills", "authoring", "code-review", "instructions"],
   "skills": ["./skills/"]
 }
