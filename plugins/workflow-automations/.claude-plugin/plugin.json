@@ -1,7 +1,21 @@
 {
   "name": "workflow-automations",
-  "description": "Automate practical workflows: scripted website walkthrough captures and skill-driven Python agent harnesses for OpenAI-compatible endpoints.",
-  "version": "0.2.0",
-  "keywords": ["browser", "capture", "video", "gif", "agents", "harness", "python", "openai-compatible"],
-  "skills": ["./skills/"]
+  "description": "Automate practical workflows: scripted website walkthrough captures, skill-driven Python agent harnesses for OpenAI-compatible endpoints, and local Streamlit data apps with browser-driven verification.",
+  "version": "0.3.0",
+  "keywords": [
+    "browser",
+    "capture",
+    "video",
+    "gif",
+    "agents",
+    "harness",
+    "python",
+    "openai-compatible",
+    "streamlit",
+    "polars",
+    "playwright"
+  ],
+  "skills": [
+    "./skills/"
+  ]
 }

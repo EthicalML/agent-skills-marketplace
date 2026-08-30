@@ -9,7 +9,7 @@ This repository is an open-source marketplace of portable agent skills and plugi
 | Plugin | Skills | Description |
 | --- | --- | --- |
 | `dev-utilities` | `writing-skills`, `writing-agents-md`, `explain-code-walkthrough`, `standardize-agent-instructions` | Author reliable skills, keep agent instruction files short and followable, explain code changes, and align instruction files across agent tools. |
-| `workflow-automations` | `site-capture`, `create-agent-harness` | Record scripted website walkthroughs as video or GIF, and build skill-driven Python agents against OpenAI-compatible endpoints. |
+| `workflow-automations` | `site-capture`, `create-agent-harness`, `create-streamlit-app`, `verify-streamlit-app` | Record scripted website walkthroughs as video or GIF, build skill-driven Python agents against OpenAI-compatible endpoints, and scaffold local Streamlit data apps verified through a headless browser. |
 | `codebase-automations` | `dependabot-fix`, `dependabot-fix-all`, `release-repo` | Diagnose and safely merge Dependabot pull requests, or assess release conformance and run profile-driven releases with artifact validation. |
 
 ## Installation
