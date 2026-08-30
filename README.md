@@ -9,9 +9,8 @@ This repository is an open-source marketplace of portable agent skills and plugi
 | Plugin | Skills | Description |
 | --- | --- | --- |
 | `dev-utilities` | `writing-skills`, `writing-agents-md`, `explain-code-walkthrough`, `standardize-agent-instructions` | Author reliable skills, keep agent instruction files short and followable, explain code changes, and align instruction files across agent tools. |
-| `site-capture` | `site-capture` | Record scripted website walkthroughs as video or GIF. |
-| `agent-harness` | `create-agent-harness` | Build a skill-driven Python agent against an OpenAI-compatible endpoint. |
-| `dependabot-autopilot` | `dependabot-fix`, `dependabot-fix-all` | Diagnose, fix, verify, and safely merge individual or batched Dependabot pull requests. |
+| `workflow-automations` | `site-capture`, `create-agent-harness` | Record scripted website walkthroughs as video or GIF, and build skill-driven Python agents against OpenAI-compatible endpoints. |
+| `codebase-automations` | `dependabot-fix`, `dependabot-fix-all` | Diagnose, fix, verify, and safely merge individual or batched Dependabot pull requests. |
 
 ## Installation
 
@@ -33,7 +32,7 @@ copilot plugin marketplace add EthicalML/agent-skills-marketplace   # Copilot CL
 copilot plugin install <plugin>@agent-skills-marketplace
 ```
 
-Replace `<plugin>` with `dev-utilities`, `site-capture`, `agent-harness`, or `dependabot-autopilot`. INSTALL.md also covers follow-up installs, updates, and breaking-change recovery.
+Replace `<plugin>` with `dev-utilities`, `workflow-automations`, or `codebase-automations`. INSTALL.md also covers follow-up installs, updates, and breaking-change recovery.
 
 ## Contributing
 

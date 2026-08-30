@@ -1,0 +1,7 @@
+{
+  "name": "workflow-automations",
+  "description": "Automate practical workflows: scripted website walkthrough captures and skill-driven Python agent harnesses for OpenAI-compatible endpoints.",
+  "version": "0.2.0",
+  "keywords": ["browser", "capture", "video", "gif", "agents", "harness", "python", "openai-compatible"],
+  "skills": ["./skills/"]
+}

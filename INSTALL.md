@@ -23,9 +23,8 @@ command -v gh && gh --version       # gh (clone auth)
 
 Plugin-specific runtimes — check only for the plugins in scope:
 
-- `site-capture`: Node.js 20+ (`command -v node && node -v`); the skill guides the Playwright install on first use.
-- `agent-harness`: Python 3 with pip (`command -v python3`), needed only when the harness template will actually be run.
-- `dev-utilities`: no additional runtime.
+- `workflow-automations`: Node.js 20+ (`command -v node && node -v`) for `site-capture` (the skill guides the Playwright install on first use), and Python 3 with pip (`command -v python3`) when the `create-agent-harness` template will actually be run.
+- `dev-utilities` and `codebase-automations`: no additional runtime (`codebase-automations` uses the GitHub CLI already required above).
 
 If a required runtime is missing, guide the user to install it (or skip that plugin), then continue.
 
@@ -36,8 +35,8 @@ Install the **default set** unless the user opts out. Confirm the list with them
 **Default set:**
 
 - `dev-utilities` — skill authoring (`writing-skills`), agent instruction content (`writing-agents-md`), code-change walkthroughs (`explain-code-walkthrough`), and cross-harness instruction-file standardization (`standardize-agent-instructions`)
-- `site-capture` — scripted browser capture of a website as video or GIF
-- `agent-harness` — build a skill-driven Python agent (`create-agent-harness`) against any OpenAI-compatible endpoint
+- `workflow-automations` — scripted browser capture of a website as video or GIF (`site-capture`), and build a skill-driven Python agent (`create-agent-harness`) against any OpenAI-compatible endpoint
+- `codebase-automations` — Dependabot PR diagnosis, fixing, and safe merging (`dependabot-fix`, `dependabot-fix-all`)
 
 No plugin in this marketplace requires an access token or an MCP server. There is nothing to create, store, or validate credential-wise — state that plainly and move on.
 

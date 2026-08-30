@@ -1,0 +1,7 @@
+{
+  "name": "codebase-automations",
+  "description": "Automate codebase maintenance: diagnose, fix, verify, and safely merge individual or batched Dependabot pull requests using repository-specific profiles.",
+  "version": "0.2.0",
+  "keywords": ["dependabot", "dependencies", "ci", "automation", "maintenance"],
+  "skills": ["./skills/"]
+}

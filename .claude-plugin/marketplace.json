@@ -13,16 +13,12 @@
       "source": "./plugins/dev-utilities"
     },
     {
-      "name": "site-capture",
-      "source": "./plugins/site-capture"
+      "name": "workflow-automations",
+      "source": "./plugins/workflow-automations"
     },
     {
-      "name": "agent-harness",
-      "source": "./plugins/agent-harness"
-    },
-    {
-      "name": "dependabot-autopilot",
-      "source": "./plugins/dependabot-autopilot"
+      "name": "codebase-automations",
+      "source": "./plugins/codebase-automations"
     }
   ]
 }
