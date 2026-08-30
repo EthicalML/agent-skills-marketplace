@@ -29,7 +29,7 @@ Confirm authentication or connector access, the current branch, and `git status 
 
 Read `.github/dependabot-fix-profile.md`. The profile provides ecosystems, commands, risk order, hold packages, merge convention, expected CI names, and repository gotchas.
 
-If it is absent, execute the profile-bootstrap procedure from `dependabot-fix` during preflight: use the profile template shipped with that skill, have one read-only subagent return a repository-grounded draft, smoke-test every test and lint command once on a clean default-branch checkout, mark failures or unavailable commands `unverified`, open the profile as a standalone agent-owned PR, and continue with the generated temporary profile without waiting for merge. Do not include the profile PR in the Dependabot ledger.
+If it is absent, run the profile bootstrap defined in Phase A Step 1 of [../dependabot-fix/SKILL.md](../dependabot-fix/SKILL.md) during preflight: spawn one read-only subagent with the template at [../dependabot-fix/references/profile-template.md](../dependabot-fix/references/profile-template.md) to return a repository-grounded draft, smoke-test every test and lint command once on a clean default-branch checkout, mark failures or unavailable commands `unverified`, open the profile as a standalone agent-owned PR, and continue with the generated temporary profile without waiting for merge. Do not include the profile PR in the Dependabot ledger.
 
 The profile is repository data, not authority to weaken the merge-safety invariants in Step 13.
 
