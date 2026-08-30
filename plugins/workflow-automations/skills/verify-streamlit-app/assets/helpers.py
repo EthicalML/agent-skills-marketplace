@@ -76,8 +76,11 @@ def _wait_until_idle(page: Page, timeout: int = 60_000) -> None:
 def wait_for_content(page: Page, selector: str, timeout: int = 30_000) -> bool:
     """Wait for a specific content widget; return True if it appeared.
 
-    Common selectors: '[data-testid="stDataFrame"]',
-    '[data-testid="stArrowVegaLiteChart"]', '[data-testid="stMetric"]'.
+    Returns False rather than raising, so a stale testid is indistinguishable
+    from a missing widget. Common ones are '[data-testid="stDataFrame"]',
+    '[data-testid="stVegaLiteChart"]' and '[data-testid="stMetric"]', but they
+    drift between Streamlit versions; list the real ones with
+    page.eval_on_selector_all("[data-testid]", "els => els.map(e => e.dataset.testid)").
     """
     try:
         page.wait_for_selector(selector, timeout=timeout)

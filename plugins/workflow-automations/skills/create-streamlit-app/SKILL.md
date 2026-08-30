@@ -5,58 +5,71 @@ description: Scaffold and run a local Streamlit and Polars data app over a file,
 
 # Create a Streamlit data app
 
-Use this skill when the user wants a local data application: a quick, interactive front end over a dataset, rather than a one-off script or a notebook. Data is read on demand into a Polars DataFrame and rendered. Nothing is persisted to disk by default, which keeps the data-handling posture clean.
+Commands assume macOS or Linux. On Windows, run the Makefile targets' underlying commands directly.
 
-Prefer Polars over pandas for the data path; convert to pandas only at the chart boundary. Do not pull in extra engines unless the user explicitly needs local SQL over local files.
+## 1. Check uv
 
-## When to use
+```bash
+command -v uv
+```
 
-- "Build me a small app to explore, filter, or chart this data."
-- "Wrap this query in a UI I can click through."
-- "I want a dashboard-like local tool for this table."
+If missing, install it: `brew install uv`, or `curl -LsSf https://astral.sh/uv/install.sh | sh`, or `pixi global install uv` without admin rights.
 
-To confirm the app actually renders, use the `verify-streamlit-app` skill.
+## 2. Settle the dataset and pick the datasource
 
-## Datasources
+Ask only what changes the scaffold: what the data is, and where it is read from. Decide the rest yourself.
 
-The app reads through one pluggable function, `load_frame(query) -> pl.DataFrame`. Pick the implementation that matches where the data lives.
+Pick one asset. It becomes the app's `datasource` module and must expose `load_frame(query) -> pl.DataFrame`.
 
-| Datasource | Asset | Use when | Notes |
-|------------|-------|----------|-------|
-| File | `assets/datasource_file.py` | CSV, TSV, Parquet, or JSON on disk | Strong default for local data. Path from `DATA_PATH`. |
-| SQL database | `assets/datasource_sql.py` | The data is in a queryable database | `pl.read_database_uri` with `DATABASE_URL`; needs connectorx or SQLAlchemy plus a driver. |
-| HTTP endpoint | `assets/datasource_http.py` | The data comes from an API returning JSON or CSV | Token through `API_TOKEN`, never in the file. |
-| Snapshot | `assets/datasource_snapshot.py` | A small aggregate is already known | Inline records, no live connection. |
+| Where the data lives | Asset | Configured through |
+|---|---|---|
+| CSV, TSV, Parquet or JSON on disk | `assets/datasource_file.py` | `DATA_PATH` |
+| A queryable SQL database | `assets/datasource_sql.py` | `DATABASE_URL` |
+| An API returning JSON or CSV | `assets/datasource_http.py` | `DATA_URL`, `API_TOKEN` |
+| A small aggregate already known | `assets/datasource_snapshot.py` | inline records |
 
-## Workflow
+Read credentials from the environment only. Never write a token into a file.
 
-Commands below assume macOS or Linux. On Windows, GNU Make is not standard: treat the generated Makefile as a template and run the underlying commands directly.
+## 3. Scaffold the app directory
 
-1. Check prerequisites. The scaffold runs on uv. Confirm it is present with `command -v uv`. If missing, install it with `brew install uv`, `curl -LsSf https://astral.sh/uv/install.sh | sh`, or `pixi global install uv` without admin rights. The generated Makefile guards this in its `check` target.
-2. Clarify the dataset and how it is reached: a file path, a database connection, an HTTP endpoint, or an aggregate already available. Ask only where the answer changes the scaffold.
-3. Scaffold a new app directory, `app/` by default, and generate these files from `assets/`: `app.py` from `assets/app_template.py`, `datasource.py` from the chosen datasource module, `pyproject.toml` from `assets/pyproject.toml.tmpl`, and `Makefile` from `assets/Makefile.tmpl`.
-4. Wire the query or path into the datasource module and edit the app entrypoint: title, filters, charts. Keep it simple: a filter row, a table, one or two charts.
-5. Read credentials from the environment, never from files. Uncomment the datasource's optional dependency in `pyproject.toml`.
-6. Install and run: `make setup`, then `make run`. Use `make watch` while iterating; it adds `--server.runOnSave true` so the app reruns on every save.
-7. Verify it renders with the `verify-streamlit-app` skill before handing off.
+Default to `app/`, and generate four files there:
 
-## Streamlit practices
+- Generate `app.py` from `assets/app_template.py`.
+- Generate `datasource.py` from the asset chosen in step 2.
+- Generate `pyproject.toml` from `assets/pyproject.toml.tmpl`.
+- Generate `Makefile` from `assets/Makefile.tmpl`.
 
-- `st.set_page_config(...)` must be the first Streamlit call in the entrypoint, before any other `st.*`. Use `layout="wide"` for data apps.
-- Multi-page apps: use the `st.Page` and `st.navigation` API to control sidebar labels and icons.
-- Cache loads with `@st.cache_data(ttl=...)` so filter reruns do not re-query the source. The template exposes `CACHE_TTL`, default one hour. Raise it for slow-changing data, or set `None` to cache until the process restarts.
-- For large datasets, the real lever is aggregating in the query so the cached frame stays small. Avoid selecting every column and row.
-- `@st.cache_data(persist="disk")` survives restarts but always writes to `~/.streamlit/cache` and is only TTL-bound. The template's opt-in `DISK_CACHE = True` instead caches results as parquet under the OS temp directory, which survives app restarts and is cleared on reboot. Use it for aggregate, non-sensitive results only.
-- Keep the selected row or id in `st.session_state`, not in local variables, which reset on every rerun.
-- Filter the Polars frame first, then render with `st.dataframe(view, use_container_width=True)`. Convert to pandas only at the chart boundary.
-- Apply global CSS once through `st.markdown(CSS, unsafe_allow_html=True)` for light theming.
+## 4. Wire the datasource
 
-## Assets
+Set the path, URI or records in the generated datasource module, and set `QUERY` in the app entrypoint for the SQL datasource. The file, HTTP and snapshot datasources ignore `QUERY`.
 
-- `assets/app_template.py` - minimal Streamlit skeleton with filters, table, chart, and a cached load with tunable `CACHE_TTL` and opt-in `DISK_CACHE`.
-- `assets/datasource_file.py` - local CSV, TSV, Parquet, or JSON file.
-- `assets/datasource_sql.py` - SQL database through a connection URI.
-- `assets/datasource_http.py` - HTTP endpoint returning JSON or CSV.
-- `assets/datasource_snapshot.py` - inline snapshot with no live connection.
-- `assets/pyproject.toml.tmpl` - dependencies for the scaffold.
-- `assets/Makefile.tmpl` - check, setup, run, watch, and clean lifecycle.
+Uncomment the datasource's optional dependency in `pyproject.toml`: `connectorx` for SQL, `requests` for HTTP.
+
+For SQL, aggregate in the query rather than selecting every row. The whole result is held in memory and cached.
+
+## 5. Edit the app
+
+Set `TITLE`, then shape the filters and charts to the data. Keep it to a filter row, a table, and one or two charts.
+
+Three rules the template already follows and that must survive editing:
+
+- `st.set_page_config(...)` stays the first Streamlit call in the file, before any other `st.*`.
+- Filter the Polars frame first, then render. Convert to pandas only at the chart boundary.
+- Leave the `@st.cache_data(ttl=CACHE_TTL)` load in place so filter reruns do not re-query the source.
+
+If the app grows past the template, into multiple pages, selection state, theming, or cache tuning, read [`docs/streamlit-notes.md`](docs/streamlit-notes.md) first.
+
+## 6. Install and run
+
+```bash
+make setup
+make run      # make watch to rerun on every save
+```
+
+If `uv pip install -e .` reports multiple top-level modules, the generated `pyproject.toml` lost its `[tool.setuptools] py-modules = []` entry. Restore it rather than renaming the app's modules.
+
+If the app starts but the page reports a missing module, the datasource's optional dependency is still commented out in `pyproject.toml`. Uncomment it and rerun `make setup`.
+
+## 7. Verify it renders
+
+Do not hand off on a running server alone. Confirm the app renders through the `verify-streamlit-app` skill.

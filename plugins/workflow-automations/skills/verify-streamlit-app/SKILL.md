@@ -5,53 +5,79 @@ description: Verify that a locally running Streamlit app actually renders and wo
 
 # Verify a Streamlit app with Playwright
 
-Use this skill to confirm a local Streamlit app really works, not merely that the server started. It drives a headless Chromium browser against a running app, screenshots it, captures JavaScript console and page errors, scans the rendered page for error markers, and clicks through key flows with Streamlit-aware selectors. The value is a tight manual loop: launch, look through the browser, fix, repeat.
+A running server proves nothing. This drives a real browser against the app, screenshots it, and reads the errors Streamlit only surfaces client-side.
 
-This is verification, not a CI test suite. Keep it lean. There are three tiers; do not merge them.
+Commands assume macOS or Linux. On Windows, run the Makefile targets' underlying commands directly.
 
-## Testing tiers
+## 1. Scaffold the harness
 
-| Tier | What | When | Files |
-|------|------|------|-------|
-| 1 - Manual loop (default) | Ad-hoc: screenshot, read page, read console errors, iterate | Active development | none; drive `assets/helpers.py` |
-| 2 - Smoke check | One boot and render check: screenshot plus error scan, no behavioural assertions | Quick "does it come up clean?" | `assets/verify.py` |
-| 3 - End-to-end (opt-in) | Real assertions on flows: select, click, assert content | The user explicitly wants regression tests | `assets/tests_e2e_example.py` |
+Copy into the app directory: `assets/helpers.py`, `assets/verify.py`, and `assets/Makefile.tmpl` as `Makefile.verify`.
 
-Default to tier 1 during development. Add tier 2 as a repeatable smoke gate. Only build tier 3 when the user asks for lasting tests.
+The name matters: `create-streamlit-app` generates its own `Makefile` in that directory. Run every target below as `make -f Makefile.verify <target>`.
 
-## Workflow
+## 2. Install Playwright
 
-Commands below assume macOS or Linux. On Windows, GNU Make is not standard: treat the generated Makefile as a template and run the underlying commands directly.
+```bash
+make -f Makefile.verify setup
+```
 
-1. Scaffold the harness next to the app: copy `assets/helpers.py` and `assets/verify.py` into the app directory, and generate `Makefile.verify` from `assets/Makefile.tmpl`. The name avoids clobbering an app `Makefile` produced by `create-streamlit-app`; run its targets with `make -f Makefile.verify <target>`. Copy `assets/tests_e2e_example.py` only for tier 3.
-2. Install Playwright: `make -f Makefile.verify setup`, which runs `uv pip install playwright pytest` and `uv run playwright install chromium`. Without uv, use `pip install playwright pytest && playwright install chromium`.
-3. Start the app: `make -f Makefile.verify start-app`, which launches `streamlit run app.py --server.headless true` in the background and blocks until the port accepts connections. Never drive the browser before the port answers.
-4. Drive the browser through the helpers: `create_browser()`, `goto(page, url)`, `screenshot(page, "name")`, `collect_errors(page)`. The last returns page-text error markers plus captured JavaScript console and page errors.
-5. Look at the screenshot and the error output. If the app is broken, fix it and repeat from step 3.
-6. Gate repeatably with `make -f Makefile.verify verify`, which exits non-zero when any error is found.
-7. Clean up: stop the app process and run `make -f Makefile.verify clean`.
+Without uv: `pip install playwright pytest && playwright install chromium`.
 
-## Streamlit-aware verification
+## 3. Start the app
 
-Streamlit renders asynchronously and does not expose stable element ids, so target labels and roles rather than CSS classes.
+```bash
+make -f Makefile.verify start-app
+```
 
-- Wait for the app shell (`.stApp`) before screenshotting, then for a content selector such as `[data-testid="stDataFrame"]`, `[data-testid="stMetric"]`, or `[data-testid="stArrowVegaLiteChart"]`. A screenshot taken on the shell alone often catches an empty page.
-- Address widgets by label or role, which survives reruns: `page.get_by_label("Filter by term").fill("abc")`, `page.get_by_role("button", name=re.compile(r"Run", re.I)).click()`.
-- Text inputs need the value committed. `st.text_input` shows "Press Enter to apply" and does not rerun the app until Enter is pressed, so a bare `fill()` leaves the page unchanged and looks like a broken filter. The `fill_input` helper presses Enter and waits for the rerun.
-- Multiselect: click the label, `keyboard.type("value")`, then `keyboard.press("Enter")`.
-- Dataframe rows are not buttons. Click a pixel offset inside the grid to select a row.
-- Capture JavaScript errors through `page.on("console", ...)` and `page.on("pageerror", ...)`. Streamlit surfaces client-side failures there, not always in the body text. `collect_errors` wires both up.
-- Use generous timeouts, 30 to 60 seconds, and longer for heavy computation. First paint and reruns are slow.
+The target blocks until the port answers, then returns. Never drive the browser before it does.
 
-## Conventions
+If it prints that the app did not come up, the app crashed on boot. Read the terminal output of the Streamlit process itself; the browser cannot tell you anything about a server that never started.
 
-- Headless Chromium by default. Set `headless=False` locally to watch the run.
-- Write screenshots and scratch files under a `tmp/` directory in the project and gitignore it. Do not use the system temp directory.
-- Do not commit screenshots or the running app's data.
+## 4. Smoke check
 
-## Assets
+```bash
+make -f Makefile.verify verify
+```
 
-- `assets/helpers.py` - `create_browser`, `goto` (waits for the app shell and for Streamlit to settle), `wait_for_content`, `screenshot`, `collect_errors`, and Streamlit selector helpers.
-- `assets/verify.py` - tier 2 smoke check. Boots the app URL, screenshots it, captures console and page errors, and exits non-zero on any error. Pass a content selector as the second argument for data-loading apps so the screenshot captures the loaded state.
-- `assets/tests_e2e_example.py` - tier 3 pytest example with real assertions and Streamlit selectors.
-- `assets/Makefile.tmpl` - setup, start-app, verify, test, and clean lifecycle.
+For an app whose content loads after a query, pass the content selector so the screenshot captures the loaded state rather than an empty shell:
+
+```bash
+uv run python verify.py http://localhost:8501 '[data-testid="stDataFrame"]'
+```
+
+Exit 0 means clean. Non-zero prints the error markers found in the page text and the JavaScript console and page errors captured during the load.
+
+Then open the screenshot at `tmp/verify.png` and look at it. A page can exit 0 and still be an empty shell, a spinner, or a table of zero rows. The screenshot is the verification; the exit code only gates the obvious failures.
+
+## 5. Drive the flows that matter
+
+Skip only if the app has no interaction. Otherwise write a short script against `assets/helpers.py`: `create_browser()`, `goto(page, url)`, then exercise each filter, selector and button, calling `screenshot(page, "<name>")` and `collect_errors(page)` after each.
+
+Streamlit renders asynchronously and exposes no stable element ids, so target labels and roles, never CSS classes:
+
+- `fill_input(page, "Filter by term", "abc")` fills and presses Enter. A bare `.fill()` does not commit the value: `st.text_input` shows "Press Enter to apply" and does not rerun, so the page stays unchanged and the filter looks broken when it is not.
+- `page.get_by_role("button", name=re.compile(r"Run", re.I))` for buttons.
+- `pick_multiselect(page, label, value)` for multiselects, which need type-then-Enter rather than a click.
+- `wait_for_content(page, '[data-testid="stDataFrame"]')` before asserting on content. Common testids are `stDataFrame`, `stMetric` and `stVegaLiteChart`, but they drift between Streamlit versions and `wait_for_content` returns False rather than raising, so a stale name reads as a missing widget. Print the real ones from the loaded page instead of guessing:
+
+```python
+print(sorted(set(page.eval_on_selector_all("[data-testid]", "els => els.map(e => e.dataset.testid)"))))
+```
+
+Assert the effect, not just the absence of errors: after filtering, the row-count caption must change. If a selector times out, screenshot first and look at the page before adjusting the selector; the widget is often absent rather than misnamed.
+
+Timeouts are 30 to 60 seconds by default. Raise them for heavy computation rather than lowering them to fail faster.
+
+## 6. Fix and repeat
+
+Every failure found here is a bug in the app, not in the harness. Fix the app, then rerun from step 4. `make watch` in `create-streamlit-app` reruns the app on save, so the loop needs no restart.
+
+## 7. Clean up
+
+Stop the Streamlit process and run `make -f Makefile.verify clean`. Write screenshots and scratch files under `tmp/` in the project and gitignore it; do not commit them.
+
+## 8. Lasting tests, only if asked
+
+Skip unless the user wants regression tests that outlive this session. Steps 4 and 5 are verification, not a test suite; do not merge them into one.
+
+Copy `assets/tests_e2e_example.py` and replace its examples with assertions on the app's real flows, using the same label and role selectors from step 5. Run with `make -f Makefile.verify test`.
