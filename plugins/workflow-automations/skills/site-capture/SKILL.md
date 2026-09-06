@@ -128,6 +128,8 @@ node ~/.claude/skills/site-capture/capture.mjs \
 
 `--pace 0.6` scales every dwell to retime against a voiceover; `--speed` sets px/second; `--cursor 2` enlarges the pointer; `--zoom 1.1` zooms in.
 
+**Walking somebody else's site: `--headed --no-root`.** The engine loads the site root before handing over, which is right when you walk a site from its landing page and wrong when the flow goes straight to one page deep inside it. `--no-root` skips that load. It matters beyond wasted footage: on a Cloudflare-fronted site the root-then-deep-link hop is itself what trips the bot check, while going straight to the target is served normally. Headless Chromium is separately fingerprinted and blocked outright by those same sites, so pair the two flags. A root that simply fails to load no longer ends the run either way.
+
 **Zoom is a CSS zoom on the root, never a viewport resize.** Playwright records the screencast at the CSS viewport size and ignores `deviceScaleFactor` for video, so asking for an output larger than the viewport pads the frame instead of scaling it — a silent letterbox that looks like nothing happened. The engine handles this; do not "fix" a zoom request by changing `--width`.
 
 ## 6. Verify on the frames
