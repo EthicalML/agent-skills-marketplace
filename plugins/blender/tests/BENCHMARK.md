@@ -38,6 +38,18 @@ A packaging check caught the distinction between a Blender data library and an o
 
 The final 720p/24 fps video contains all 432 frames, AAC audio, and captions. Full-file decoding and stream metadata checks passed; sampled frames from the encoded MP4 were inspected. The successful render took 1,128 seconds, averaging 2.61 seconds per frame. The three GLB assets reimported as 45, 26, and 28 objects respectively, with one coordinated animation clip each. A separate reconstruction from the included scene scripts also passed the contact and camera checks.
 
+## Reference reconstruction and visual quality
+
+The character short above passed technical checks, but its primitive character construction did not meet the requested sculpted reference quality. Treat it as a workflow/blockout benchmark, not proof of production character modeling. That distinction is now explicit in the skill.
+
+A subsequent local experiment used two supplied reference images independently with TRELLIS.2 through the MLX runtime documented in references/local-image-to-3d.md. It generated two 512 candidates and a 1024 cascade refinement on an M1 Max with 32 GB. Neutral front, three-quarter, side, back, and face views were inspected. The angled input invented an additional ear and damaged facial geometry and was rejected. The front input captured substantially better reference proportions and facial volume than the primitive assembly, but invented facial structure on the unseen rear head.
+
+The raw 512 mesh had 683,105 vertices and 1,374,528 triangles. Recalculating face winding reduced inconsistent manifold edges from 373,959 to 3,284 and removed most striped shading; 20,297 non-manifold edges remained. A voxel-remesh cleanup worsened the head and one shoe and was rejected. Imported custom normals and sharp-edge flags also required attention during neutral review.
+
+The 1024 candidate took approximately 16 minutes versus four minutes for one 512 candidate. It improved mouth and shoe forms but retained invented rear geometry and surface defects. Its 5,523,350 triangles did not imply cleaner topology: after normals repair, 141,760 non-manifold edges remained. The selected result is a static reconstruction study, explicitly not approved for production animation. Its GLB reimport preserved mesh counts and approximately four-unit height; a five-second, 60-frame turntable exposes all sides. No deformation rig or facial controls were created.
+
+These observed failures motivated the reference comparison, candidate rejection, repair comparison, and animation-readiness gates. Private inputs and generated character assets remain outside version control. Broader reusable mesh-audit and deformation tests are tracked in issue #18.
+
 ## Scope of confidence
 
 This checks a representative iterative modeling/render/export workflow, not every Blender feature or every upstream service. Paid model-generation APIs and credentialed asset libraries require separate acceptance tests with authorized accounts. File-reimport success is not proof of visual equivalence, rig deformation, or simulation-cache portability; those require task-specific evidence.
