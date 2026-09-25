@@ -42,6 +42,8 @@ Read [references/iteration.md](references/iteration.md) for rendering, multiple 
 
 Use viewport captures for geometry and placement. Use `B.render_preview(...)` for material, lighting, camera, and color decisions. It checkpoints the live scene and renders in a separate Blender process. Poll its job, then open the returned image path. Compare against the brief, identify specific weaknesses, and make the next change accordingly. Use multiple cameras or frames when one view could conceal errors. Keep useful earlier previews for comparison.
 
+For character interactions or a finished video with camera cuts/audio, read [references/animation.md](references/animation.md).
+
 For long renders, animation, baking, or scripted batch work, read [references/jobs.md](references/jobs.md). Background jobs operate on saved snapshots, not the evolving live scene; their changes do not merge back automatically. If a live call reports `OutcomeUnknown`, inspect the scene or output before retrying: the operation may have completed or still be queued. Do not blindly repeat writes. If Blender reports a Python exception, inspect partial changes before rerunning.
 
 ## 4. Validate and deliver

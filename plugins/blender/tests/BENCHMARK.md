@@ -28,6 +28,14 @@ Separate Blender processes reopened the packed blend, confirmed the HDRI and 0/1
 
 A saved-file job running a deliberate wait in a separate Blender process was cancelled through cancel_job. Its terminal state was cancelled and its exit code was -15; the interactive listener remained available. The subprocess unit suite separately verifies forced termination of an unresponsive child.
 
+## Advanced exercise: character interaction and video
+
+An 18-second workshop short exercises 228 objects, hierarchical character animation, four camera segments, a grasping hand, a robot-controlled lever, a rolling ball, a spring paddle, a bell, and confetti. It uses a packed CC0 Poly Haven HDRI, generated narration, original synthesized music/effects, and reusable character/prop libraries. The source scene and previous benchmark scenes remain separate from the delivery project.
+
+The first previews exposed a reversed shoulder rotation and a robot hand that did not reach the lever. Corrected poses follow their targets in world space. A numerical check then exposed a small ball-to-ramp gap and interpolation drift between corrected keys; baking the contact interval removed it. The full 432-frame verification checks finite transforms and camera cuts. Maximum measured errors are below 0.000001 scene units for the mouse grasp, robot lever contact, the ball's checked ramp interval, and the ball-to-clapper impact.
+
+A packaging check caught the distinction between a Blender data library and an ordinary project: the library opened to an empty startup scene. A separate process selected the intended scene and saved a normal project, and another reopen verified the default scene, packed lighting, and soundtrack. GPU profiling also showed why a second sample matters: first-use Metal shader compilation took about 102 seconds, while subsequent 720p/24-sample frames took approximately three seconds. The first glTF exports also split each object action into separate clips; scene-mode export preserves coordinated motion in a single clip per asset. Required curves are converted in the isolated export process. These findings are captured in the conditional animation workflow reference.
+
 ## Scope of confidence
 
 This checks a representative iterative modeling/render/export workflow, not every Blender feature or every upstream service. Paid model-generation APIs and credentialed asset libraries require separate acceptance tests with authorized accounts. File-reimport success is not proof of visual equivalence, rig deformation, or simulation-cache portability; those require task-specific evidence.
