@@ -50,6 +50,14 @@ The 1024 candidate took approximately 16 minutes versus four minutes for one 512
 
 These observed failures motivated the reference comparison, candidate rejection, repair comparison, and animation-readiness gates. Private inputs and generated character assets remain outside version control. Broader reusable mesh-audit and deformation tests are tracked in issue #18.
 
+## Local hand replacement, color, and limited animation
+
+A follow-up retained the dense reconstruction and replaced both damaged gloves with joined, remeshed palm/finger/thumb volumes, separate cuffs, and seams. Each glove has 74,842 vertices, one connected component, zero non-manifold edges, and Euler characteristic 2. Earlier versions passed the edge check but had fused fingertips; closeup inspection and the topology check together caught that failure. Broad trimming and decimation damaged adjacent clothing and shoes and were rejected.
+
+Rest-space vertex colors and separate colored parts support a nine-bone wave, two blinks, and bow over 192 frames at 24 fps. All frame transforms are finite. This is a limited performance, with visible inherited face/body surface defects; it does not establish full-body retopology or arbitrary deformation readiness.
+
+A GLB with one skin and one clip initially omitted object-scale eye blinks. Eye-bone animation retained those channels. A subsequent reimport exposed hand deformation from nonuniform parent scaling with disabled scale inheritance. Baking evaluated joint matrices into independent joints in the isolated export copy fixed it. Rest, closed-eye, maximum-wave, bow, and final-frame comparisons of evaluated world-space mesh bounds agree within 0.000001 scene units. The editable blend retains its original joint hierarchy. Private source images and generated assets remain outside this repository.
+
 ## Scope of confidence
 
 This checks a representative iterative modeling/render/export workflow, not every Blender feature or every upstream service. Paid model-generation APIs and credentialed asset libraries require separate acceptance tests with authorized accounts. File-reimport success is not proof of visual equivalence, rig deformation, or simulation-cache portability; those require task-specific evidence.
