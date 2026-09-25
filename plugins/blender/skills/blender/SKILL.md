@@ -34,6 +34,8 @@ Write repeatable Python scripts in the project, with parameters and stable names
 
 Start with composition, silhouette, scale, and camera placement. Get feedback from an image before spending time on detail. For version-sensitive operators or nodes, call `B.api_lookup(query=...)` or `B.describe_node_type(bl_idname=...)` before guessing identifiers. Find shader nodes by type, not their localized names; set rendered colors through node inputs.
 
+For reconstruction from images or a reference-matched character, read [references/reconstruction.md](references/reconstruction.md) before choosing the construction method. Treat blockouts as blockouts until the reference comparison passes.
+
 If external assets or model generation would help the brief, follow [references/assets.md](references/assets.md). Choose assets or procedural construction according to the task, not a fixed asset-first rule.
 
 ## 3. Iterate with visual evidence
