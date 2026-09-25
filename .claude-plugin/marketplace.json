@@ -19,6 +19,10 @@
     {
       "name": "codebase-automations",
       "source": "./plugins/codebase-automations"
+    },
+    {
+      "name": "blender",
+      "source": "./plugins/blender"
     }
   ]
 }

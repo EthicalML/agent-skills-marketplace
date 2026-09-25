@@ -1,0 +1,441 @@
+{
+  "get_addon_info": {
+    "parameters": {},
+    "description": "Version/capability handshake for the MCP server (and install tooling)."
+  },
+  "get_scene_info": {
+    "parameters": {},
+    "description": "Get information about the current Blender scene"
+  },
+  "drain_human_activity": {
+    "parameters": {},
+    "description": "Return human-originated events buffered since the last drain.\n\nConsent is enforced MCP-side (the server only drains and uploads when\nthe user has opted in), but we also refuse here so a buffer does not\naccumulate for a user who has said no."
+  },
+  "get_world_state_snapshot": {
+    "parameters": {},
+    "description": "Compact world-state snapshot for trajectory capture (no mesh/shader detail)."
+  },
+  "get_object_info": {
+    "parameters": {
+      "name": {
+        "required": true
+      }
+    },
+    "description": "Get detailed information about a specific object"
+  },
+  "get_viewport_screenshot": {
+    "parameters": {
+      "max_size": {
+        "required": false,
+        "default": 800
+      },
+      "filepath": {
+        "required": false,
+        "default": null
+      },
+      "format": {
+        "required": false,
+        "default": "png"
+      }
+    },
+    "description": "Capture a screenshot of the current 3D viewport and save it to the specified path.\n\nParameters:\n- max_size: Maximum size in pixels for the largest dimension of the image\n- filepath: Path where to save the screenshot file\n- format: Image format (png, jpg, etc.)\n\nReturns success/error status"
+  },
+  "execute_code": {
+    "parameters": {
+      "code": {
+        "required": true
+      }
+    },
+    "description": "Execute arbitrary Blender Python code"
+  },
+  "describe_node_type": {
+    "parameters": {
+      "bl_idname": {
+        "required": true
+      },
+      "property_overrides": {
+        "required": false,
+        "default": null
+      }
+    },
+    "description": "Describe a node type's properties and socket schema.\n\nThis is the fix for the single most common failure mode: guessing\nsocket names/indices and enum values instead of looking them up.\nSince a node's sockets are only known once instantiated (and can\ndepend on mode-like properties, e.g. Mix's `data_type`), this\ncreates a throwaway node in a scratch node tree, optionally applies\n`property_overrides` first (e.g. {\"data_type\": \"RGBA\"}) so the\ncaller can see the exact socket layout for the mode they intend to\nuse, then reports its properties/inputs/outputs, and finally\ndeletes the scratch tree. Nothing in the user's actual scene is\ntouched."
+  },
+  "bpy_api_lookup": {
+    "parameters": {
+      "query": {
+        "required": true
+      }
+    },
+    "description": "Structured RNA reference lookup: types, properties, functions, operators.\n\nAccepts things like:\n  - \"ShaderNodeTexSky\" or \"bpy.types.ShaderNodeTexSky\"       -> full type schema\n  - \"ShaderNodeTexSky.sky_type\"                              -> one property, with enum items\n  - \"Object.ray_cast\"                                        -> one method's parameters/returns\n  - \"bpy.ops.mesh.primitive_cube_add\"                        -> operator parameters\nThis replaces scraping `help()` text: every answer is structured\nJSON with real type names, enum identifiers, and required/optional\nflags, not something that has to be re-parsed out of a text blob."
+  },
+  "export_scene": {
+    "parameters": {
+      "filepath": {
+        "required": true
+      },
+      "format": {
+        "required": false,
+        "default": "glb"
+      },
+      "object_names": {
+        "required": false,
+        "default": null
+      },
+      "selection_only": {
+        "required": false,
+        "default": false
+      },
+      "apply_modifiers": {
+        "required": false,
+        "default": true
+      }
+    },
+    "description": "Export the whole scene, the current selection, or the named objects to a GLB or FBX file.\n\nNamed objects are exported together with their children. GLB carries PBR\nmaterials, emission, skins, shape keys and animation; FBX is the fallback for\ntools that need Unity's built-in importer. apply_modifiers=False keeps rigs\nand shape keys intact. The file is written where the caller asked, so other\napplications (game engines, viewers) can pick it up without going through\nexecute_code."
+  },
+  "get_polyhaven_categories": {
+    "parameters": {
+      "asset_type": {
+        "required": true
+      }
+    },
+    "description": "Get the category taxonomy and attribute schema for an asset type."
+  },
+  "search_polyhaven_assets": {
+    "parameters": {
+      "asset_type": {
+        "required": false,
+        "default": null
+      },
+      "category": {
+        "required": false,
+        "default": null
+      },
+      "attributes": {
+        "required": false,
+        "default": null
+      },
+      "query": {
+        "required": false,
+        "default": null
+      },
+      "limit": {
+        "required": false,
+        "default": null
+      },
+      "min_size_m": {
+        "required": false,
+        "default": null
+      }
+    },
+    "description": "Search for assets from Polyhaven with optional filtering"
+  },
+  "get_polyhaven_asset_preview": {
+    "parameters": {
+      "asset_id": {
+        "required": true
+      }
+    },
+    "description": "Fetch an asset's thumbnail, so it can be looked at before downloading.\n\nA thumbnail is a few hundred kilobytes against a 4k texture's 24MB, so\nchecking one first is cheaper for everybody than importing the wrong rock."
+  },
+  "download_polyhaven_asset": {
+    "parameters": {
+      "asset_id": {
+        "required": true
+      },
+      "asset_type": {
+        "required": true
+      },
+      "resolution": {
+        "required": false,
+        "default": "1k"
+      },
+      "file_format": {
+        "required": false,
+        "default": null
+      }
+    },
+    "description": ""
+  },
+  "set_texture": {
+    "parameters": {
+      "object_name": {
+        "required": true
+      },
+      "texture_id": {
+        "required": true
+      }
+    },
+    "description": "Apply a previously downloaded Polyhaven texture to an object by creating a new material"
+  },
+  "get_telemetry_consent": {
+    "parameters": {},
+    "description": "Get the current telemetry consent status.\n\nFails closed: if preferences cannot be read we report no consent. Not\nbeing able to read the preference means we do not know the user's\nanswer, which is not the same as them having said yes."
+  },
+  "set_telemetry_consent": {
+    "parameters": {
+      "consent": {
+        "required": false,
+        "default": false
+      }
+    },
+    "description": "Write the telemetry consent preference.\n\nOnly reached when the user answered an elicitation prompt in their MCP\nclient, or asked to opt out. Assigning the property in code skips the\nBoolProperty update= callback, so the manual-edit handlers are\nre-synced explicitly."
+  },
+  "get_polyhaven_status": {
+    "parameters": {},
+    "description": "Get the current status of PolyHaven integration"
+  },
+  "get_hyper3d_status": {
+    "parameters": {},
+    "description": "Get the current status of Hyper3D Rodin integration"
+  },
+  "create_rodin_job": {
+    "parameters": {},
+    "description": "",
+    "mode_variants": {
+      "create_rodin_job_main_site": {
+        "parameters": {
+          "text_prompt": {
+            "required": false,
+            "default": null
+          },
+          "images": {
+            "required": false,
+            "default": null
+          },
+          "bbox_condition": {
+            "required": false,
+            "default": null
+          }
+        }
+      },
+      "create_rodin_job_fal_ai": {
+        "parameters": {
+          "text_prompt": {
+            "required": false,
+            "default": null
+          },
+          "images": {
+            "required": false,
+            "default": null
+          },
+          "bbox_condition": {
+            "required": false,
+            "default": null
+          }
+        }
+      }
+    },
+    "accepts_mode_specific_parameters": true
+  },
+  "poll_rodin_job_status": {
+    "parameters": {},
+    "description": "",
+    "accepts_mode_specific_parameters": true,
+    "mode_variants": {
+      "poll_rodin_job_status_main_site": {
+        "parameters": {
+          "subscription_key": {
+            "required": true
+          }
+        }
+      },
+      "poll_rodin_job_status_fal_ai": {
+        "parameters": {
+          "request_id": {
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "import_generated_asset": {
+    "parameters": {},
+    "description": "",
+    "accepts_mode_specific_parameters": true,
+    "mode_variants": {
+      "import_generated_asset_main_site": {
+        "parameters": {
+          "task_uuid": {
+            "required": true
+          },
+          "name": {
+            "required": true
+          }
+        }
+      },
+      "import_generated_asset_fal_ai": {
+        "parameters": {
+          "request_id": {
+            "required": true
+          },
+          "name": {
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "get_sketchfab_status": {
+    "parameters": {},
+    "description": "Get the current status of Sketchfab integration"
+  },
+  "search_sketchfab_models": {
+    "parameters": {
+      "query": {
+        "required": true
+      },
+      "categories": {
+        "required": false,
+        "default": null
+      },
+      "count": {
+        "required": false,
+        "default": 20
+      },
+      "downloadable": {
+        "required": false,
+        "default": true
+      }
+    },
+    "description": "Search for models on Sketchfab based on query and optional filters"
+  },
+  "get_sketchfab_model_preview": {
+    "parameters": {
+      "uid": {
+        "required": true
+      }
+    },
+    "description": "Get thumbnail preview image of a Sketchfab model by its UID"
+  },
+  "download_sketchfab_model": {
+    "parameters": {
+      "uid": {
+        "required": true
+      },
+      "normalize_size": {
+        "required": false,
+        "default": false
+      },
+      "target_size": {
+        "required": false,
+        "default": 1.0
+      }
+    },
+    "description": "Download a model from Sketchfab by its UID\n\nParameters:\n- uid: The unique identifier of the Sketchfab model\n- normalize_size: If True, scale the model so its largest dimension equals target_size\n- target_size: The target size in Blender units (meters) for the largest dimension"
+  },
+  "get_polypizza_status": {
+    "parameters": {},
+    "description": "Get the current status of Poly Pizza integration"
+  },
+  "search_polypizza_models": {
+    "parameters": {
+      "query": {
+        "required": false,
+        "default": null
+      },
+      "category": {
+        "required": false,
+        "default": null
+      },
+      "licence": {
+        "required": false,
+        "default": null
+      },
+      "animated": {
+        "required": false,
+        "default": false
+      },
+      "limit": {
+        "required": false,
+        "default": 20
+      },
+      "page": {
+        "required": false,
+        "default": null
+      }
+    },
+    "description": "Search for models on Poly Pizza by keyword and/or filters\n\nParameters:\n- query: Keyword to search for. When omitted, at least one filter is\n         required: the bare /search endpoint answers 400 without one.\n- category: Numeric category id (0-11); the MCP server resolves names\n- licence: Numeric licence id (0 = CC-BY, 1 = CC0); the MCP server resolves names\n- animated: When True, return only animated models\n- limit: Maximum number of results to return (the API caps a page at 32)\n- page: Optional 0-based page number"
+  },
+  "download_polypizza_model": {
+    "parameters": {
+      "model_id": {
+        "required": true
+      },
+      "normalize_size": {
+        "required": false,
+        "default": false
+      },
+      "target_size": {
+        "required": false,
+        "default": 1.0
+      }
+    },
+    "description": "Download a model from Poly Pizza by its ID\n\nParameters:\n- model_id: The Poly Pizza model ID (from search_polypizza_models)\n- normalize_size: If True, scale the model so its largest dimension equals target_size\n- target_size: The target size in Blender units (meters) for the largest dimension"
+  },
+  "get_hunyuan3d_status": {
+    "parameters": {},
+    "description": "Get the current status of Hunyuan3D integration"
+  },
+  "create_hunyuan_job": {
+    "parameters": {},
+    "description": "",
+    "mode_variants": {
+      "create_hunyuan_job_main_site": {
+        "parameters": {
+          "text_prompt": {
+            "required": false,
+            "default": null
+          },
+          "image": {
+            "required": false,
+            "default": null
+          }
+        }
+      },
+      "create_hunyuan_job_local_site": {
+        "parameters": {
+          "text_prompt": {
+            "required": false,
+            "default": null
+          },
+          "image": {
+            "required": false,
+            "default": null
+          }
+        }
+      }
+    },
+    "accepts_mode_specific_parameters": true
+  },
+  "poll_hunyuan_job_status": {
+    "parameters": {},
+    "description": "",
+    "accepts_mode_specific_parameters": true,
+    "mode_variants": {
+      "poll_hunyuan_job_status_ai": {
+        "parameters": {
+          "job_id": {
+            "required": true
+          }
+        }
+      }
+    }
+  },
+  "import_generated_asset_hunyuan": {
+    "parameters": {},
+    "description": "",
+    "accepts_mode_specific_parameters": true,
+    "mode_variants": {
+      "import_generated_asset_hunyuan_ai": {
+        "parameters": {
+          "name": {
+            "required": true
+          },
+          "zip_file_url": {
+            "required": true
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "blender",
+  "description": "Live Blender workflows through composable Python: modeling, visual iteration, background jobs, assets and verified delivery.",
+  "version": "0.1.0",
+  "skills": ["./skills/"]
+}
