@@ -72,6 +72,12 @@ An authored controlled surface with separate smooth ears/nose produced cleaner v
 
 The skill now routes complex tasks through docs/index.md, with a learning log, regional experiment procedure, quality gates, and workstream statuses. Existing reference paths remain valid. Project-specific assets, scripts, and private evidence remain outside the public repository.
 
+## Thumb, cuff, and action-pose iteration
+
+A later review exposed a missed criterion: the earlier closed glove's thumb pointed back toward the wrist along the longitudinal hand axis. Rotating it into the wave put the thumb below the palm. Four variants rebuilt the palm/digits in a wrist-relative frame, raised the side-mounted thumb root, shortened and spread the thumb, sealed the cuff, and corrected a sleeve-cap ridge. The new geometry also required a revised wrist angle and reach to keep the thumb visible beside the head. Matching back/palm/oblique and whole-character views were inspected.
+
+The selected right/left gloves have 39,546 and 39,544 vertices respectively, each with one component, zero non-manifold edges, and Euler characteristic 2. Finite rig transforms passed across 192 frames. A nearest-surface/normal diagnostic sampled 501 vertices per glove per frame against the closed head, flagged no suspected penetration, and measured a minimum sampled separation of approximately 0.0427 scene units. This is not exhaustive collision proof. The benchmark remains a rigid open glove and wrist action, not an articulated fist/grasp rig. The new docs/hands.md procedure separates anatomy/style, topology, cuff joins, and action-pose checks.
+
 ## Scope of confidence
 
 This checks a representative iterative modeling/render/export workflow, not every Blender feature or every upstream service. Paid model-generation APIs and credentialed asset libraries require separate acceptance tests with authorized accounts. File-reimport success is not proof of visual equivalence, rig deformation, or simulation-cache portability; those require task-specific evidence.

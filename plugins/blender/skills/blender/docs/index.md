@@ -6,6 +6,7 @@ Use this index when a task needs more than connection setup or a simple scene ed
 | --- | --- | --- |
 | Reconstruct likeness from images | [Image reconstruction](../references/reconstruction.md), then [local Apple Silicon generation](../references/local-image-to-3d.md) when using that backend | Tested local candidates; hidden surfaces and deformation remain separate checks |
 | Recognizable asset, poor finish | [Polish workflow](../references/asset-polish.md), then [regional surface experiments](regional-surfaces.md) | Research plus bounded regional trials; not automatic production retopology |
+| Repair thumb placement, finger proportions, or cuff joins | [Hands and gloves](hands.md), then [quality review](quality-review.md) | Open-glove and rigid-wave iterations; finger articulation remains separate |
 | Decide which quality check is missing | [Quality review](quality-review.md) | Failures observed in reconstruction, glove repair, and export runs |
 | Understand failures and avoid repeating them | [Learning log](learning-log.md) | Observed outcomes, limits, and links to the applicable procedure |
 | Select the next capability to implement | [Workstreams](workstreams.md) | Explicit implementation and validation status |

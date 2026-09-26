@@ -28,8 +28,15 @@ Keep private assets and logs in the project. This log records reusable findings;
 
 | L21 | A consolidated rebuild inherited portrait render settings from the source, unlike the square trial previews | Set every review camera and render property explicitly; inspect output dimensions | Identical dimensions, framing, pose, and exposure across baseline/candidates |
 
+| L22 | A closed glove's thumb pointed toward the wrist in hand-relative coordinates, so the wave put it below the palm | Construct root, web, mound, and tip in a wrist/palm frame | Compare longitudinal thumb direction, back/palm views, and the actual wave |
+| L23 | Improved hand geometry was hidden behind the head by the old wrist orientation | Revisit pose angle and reach after geometry changes | Full-character and intermediate-frame clearance checks |
+| L24 | Rounded wrist ends exposed a cuff gap; a sleeve cap created a ridge in the palm | Match sleeve radius to cuff and place the far cap inside the palm volume | Bent-wrist closeups from both sides |
+| L25 | Raising the thumb too far made it resemble another long finger | Shorten it and adjust lateral spread while preserving the web | Reference-style silhouette and thumb/index distinction, not tip height alone |
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).
 
 Do not erase failed approaches when a later version succeeds. Record the conditions under which a method failed; a regional method succeeding does not retroactively prove that a whole-character application was safe.
+
+For L22–L25, follow [hands and gloves](hands.md); the observed benchmark covers an open glove and rigid wave, not independent finger articulation.

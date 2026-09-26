@@ -12,6 +12,8 @@ Confirm what the source views actually show. If screenshots are uncalibrated or 
 
 Compare silhouette, head-to-body proportions, muzzle depth, ear shape/thickness, eye placement, mouth corners, glove palm/thumb/finger proportions, shoes, and exposed joins. Clean topology does not establish these qualities. A previously repaired glove was manifold and had separated digits but still needed a style/proportion review.
 
+When the defect concerns thumbs, digits, or cuffs, follow [hands and gloves](hands.md) and inspect the pose as well as the mesh.
+
 Reject a smooth but less recognizable candidate. Record whether an improvement is local, view-dependent, or consistent across the whole review set. Do not use attractive lighting to conceal a failed neutral view.
 
 ## 3. Audit regional surfaces
