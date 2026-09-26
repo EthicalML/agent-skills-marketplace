@@ -52,7 +52,7 @@ Use viewport captures for geometry and placement. Use `B.render_preview(...)` fo
 
 For hand/glove construction or repair, read [docs/hands.md](docs/hands.md) before changing geometry. Review the thumb–index web, cuff join, and actual action pose separately from topology counts.
 
-For character interactions or a finished video with camera cuts/audio, read [references/animation.md](references/animation.md).
+For character interactions or a finished video with camera cuts/audio, read [references/animation.md](references/animation.md). To save reusable Actions or combine motions, follow [animation libraries](docs/animation-library.md).
 
 For long renders, animation, baking, or scripted batch work, read [references/jobs.md](references/jobs.md). Background jobs operate on saved snapshots, not the evolving live scene; their changes do not merge back automatically. If a live call reports `OutcomeUnknown`, inspect the scene or output before retrying: the operation may have completed or still be queued. Do not blindly repeat writes. If Blender reports a Python exception, inspect partial changes before rerunning.
 

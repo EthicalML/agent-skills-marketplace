@@ -14,6 +14,7 @@ Use this index when a task needs more than connection setup or a simple scene ed
 | Decide which quality check is missing | [Quality review](quality-review.md) | Failures observed in reconstruction, glove repair, and export runs |
 | Understand failures and avoid repeating them | [Learning log](learning-log.md) | Observed outcomes, limits, and links to the applicable procedure |
 | Select the next capability to implement | [Workstreams](workstreams.md) | Explicit implementation and validation status |
+| Save reusable clips or layer gestures over walking | [Animation library](animation-library.md) | Six Actions and masked NLA composition tested on one rig |
 | Rig interaction, blinks, contacts, or portable animation | [Animation workflow](../references/animation.md) and the animation/export rows in [Learning log](learning-log.md) | Limited performance and reimport benchmarks; not a full facial rig |
 | Render, bake, or run expensive validation | [Background jobs](../references/jobs.md), then [iteration](../references/iteration.md) | Tested separate-process jobs and comparable previews |
 | Package an editable project or export | [Delivery](../references/delivery.md) | Reopen/reimport and video verification; appearance still requires inspection |

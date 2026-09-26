@@ -72,6 +72,12 @@ For L44–L48, follow [independent reconstruction](independent-reconstruction.md
 
 For L49, follow [animation](../references/animation.md). In-place contact checks do not establish world-space foot locking.
 
+| L50 | A full-body gesture Action would compete with locomotion channels | Bake only intended gesture bones and layer over a full-body base | Inspect F-curve bone paths and compare lower-body matrices with overlay muted |
+| L51 | A numerically reachable wave placed the glove over the ear silhouette | Review raised-hand/head clearance and wrist orientation | Render actual gesture extremes, not only rest pose |
+| L52 | Procedural jaw movement does not establish speech synchronization | Label silent talk gestures explicitly; add audio alignment separately | Separate gesture validation from phoneme/viseme timing |
+
+For L50–L52, follow [animation libraries](animation-library.md).
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).
