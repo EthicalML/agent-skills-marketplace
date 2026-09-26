@@ -20,4 +20,3 @@ def reset_except(armature, snapshot, preserve):
     armature.data.pose_position = 'POSE'
     for bone in armature.pose.bones:
         bone.matrix_basis = snapshot[bone.name] if bone.name in preserve else Matrix.Identity(4)
-
