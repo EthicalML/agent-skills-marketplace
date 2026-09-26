@@ -17,6 +17,7 @@ Use this index when a task needs more than connection setup or a simple scene ed
 | Make talking follow actual speech | [Speech animation](speech-animation.md) | Rhubarb CLI and one short jaw/cheek benchmark tested; lip polish and broader phrase coverage pending |
 | Retarget downloaded body motion | [Stock motion](stock-motion.md) | Rokoko baking plus one character-specific hybrid contact-corrected walk/run pair; generic retargeting and world-space foot locking pending |
 | Add tail waves, camera-facing ears or assess stock body motion | [Secondary motion](secondary-motion.md) | One tail/ear setup tested; stock retargeting findings live in Stock motion |
+| Import several rigged characters and share a clip browser | [Character libraries](character-library.md) | Native and game rigs adapted in isolated pilots; asset-specific contacts and facial calibration remain necessary |
 | Save reusable clips or layer gestures over walking | [Animation library](animation-library.md) | Six Actions and masked NLA composition tested on one rig |
 | Rig interaction, blinks, contacts, or portable animation | [Animation workflow](../references/animation.md) and the animation/export rows in [Learning log](learning-log.md) | Limited performance and reimport benchmarks; not a full facial rig |
 | Render, bake, or run expensive validation | [Background jobs](../references/jobs.md), then [iteration](../references/iteration.md) | Tested separate-process jobs and comparable previews |

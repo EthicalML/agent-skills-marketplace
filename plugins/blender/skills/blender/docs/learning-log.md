@@ -108,3 +108,7 @@ For L36–L39, read the external-blend findings in [reference comparison](refere
 | L57 | Integer-frame checking sampled a short closure transition | Keep fractional cue timestamps and check the actual cue center | Final composed NLA closure, audio origin and removal of competing jaw channels |
 
 Follow [speech animation](speech-animation.md). Rhubarb CLI was executed on one short phrase; the optional Blender NG add-on was researched only.
+
+## Multi-character asset intake and adaptation
+
+Supplied archives were bounded and inspected before loading with automatic scripts disabled. Working native and game rigs still needed distinct hierarchy, attachment, texture and speech repairs. Observed failures included detached game ankle controls, prop geometry included in character bounds, inverted eyelid defaults, and integer coercion of a floating-point mouth property. The recovery and saved-file checks are documented in [character libraries](character-library.md). These are tested project adapters, not a universal retargeter or a guarantee of production-ready animation.
