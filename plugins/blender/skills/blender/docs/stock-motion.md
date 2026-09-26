@@ -35,3 +35,11 @@ Partition left/right shoe geometry using skinning membership or known components
 Hand clearance needs actual retargeted mesh review. Wrist targets alone do not protect a large glove whose fingers point into the face. A tested correction adapted arm reach and damped wrist orientation toward a relaxed pose before baking; this was not a physics collision constraint. Do not claim a generic Limit Rotation switch solves mesh intersection.
 
 Reapply fake users after appending Action-only libraries. In one saved-file test, an unused appended Action disappeared even though its source Action had a fake user. Reopening the complete browser and switching every entry caught the loss. Validate imports after save/reopen, not only immediately after append.
+
+## Separate contact correctness from acting quality
+
+A user rejected a floor-clear, head-clear run because the shoes stayed almost flat and the open gloves looked stiff. Treat collision checks as regression evidence, not motion approval. Review landing, support, toe-off, heel recovery and airborne phases from side and front; the shoe's pitch and the arm/finger silhouette need explicit acceptance alongside sole clearance. A compact cartoon run can need stronger heel recovery than a modest walk roll even when both clear the floor.
+
+Do not leave a previously preferred clip outside a requested contact repair without saying so: approving its personality does not approve its foot mechanics. Preserve its recorded upper-body performance while replacing the faulty contact correction. Infer source heading per Action; two clips from the same download can require opposite heading corrections.
+
+When orienting a wrist, target direction leaves roll unresolved. Inspect the palm plane and thumb direction, and account for mirrored rest-bone axes. A sign-flipped basis that looks symmetric numerically can put one thumb down. Curl actual finger joints rather than only rotating an open glove. Review the front silhouette after any wrist-roll change and retain glove/head checks, but do not claim they certify glove self-contact or torso contact.
