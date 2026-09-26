@@ -68,6 +68,10 @@ For L40–L43, follow [bounded asset spikes](asset-spikes.md). Pose-transform sn
 
 For L44–L48, follow [independent reconstruction](independent-reconstruction.md). Complete independent likeness has not been demonstrated by these regional trials.
 
+| L49 | Procedural pose generation reset bone bases then read stale matrices, accumulating root offsets and unreachable leg targets | Update the dependency graph between reset and matrix reads | Reopened cycle endpoint equality, leg reach and per-frame shoe-floor checks |
+
+For L49, follow [animation](../references/animation.md). In-place contact checks do not establish world-space foot locking.
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).
