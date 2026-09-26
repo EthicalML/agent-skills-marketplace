@@ -59,6 +59,15 @@ Keep private assets and logs in the project. This log records reusable findings;
 
 For L40–L43, follow [bounded asset spikes](asset-spikes.md). Pose-transform snapshots do not capture animation, constraints, or rest data.
 
+| L44 | A rig's bone anchors were useful for measurements but did not locate facial surface landmarks | Export pose-aware normalized bounds/anchors; label their meaning and align expression separately | Transformed-instance and sparse rotated-mesh measurement checks |
+| L45 | A second shape preset reused construction code but did not establish quality on another character | Separate generator, per-character parameters, and cross-character benchmark | Treat parameter reuse and target likeness as separate results |
+| L46 | Voxel union made a facial assembly connected/manifold while cheek and lip shapes stayed wrong | Replace the surface representation with explicit mouth/cheek boundary layout | Profile and oblique review can reject a one-component watertight head |
+| L47 | An old facial color boundary put black patches on newly enlarged cheek volume | Re-author or transfer the material-region field after topology/volume changes | Review clay geometry separately from material boundaries; report regenerated attributes |
+
+| L48 | Shared mouth/cheek topology removed assembly seams but still yielded a wedge muzzle and pinched corners | Measure target surface correspondences and fit new topology; stop guessing curve coordinates | Exact boundary/helper checks plus independent multiview likeness review |
+
+For L44–L48, follow [independent reconstruction](independent-reconstruction.md). Complete independent likeness has not been demonstrated by these regional trials.
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).
