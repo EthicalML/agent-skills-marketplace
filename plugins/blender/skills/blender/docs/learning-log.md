@@ -41,6 +41,11 @@ Keep private assets and logs in the project. This log records reusable findings;
 | L30 | A replacement left the original unsuffixed tail because its name filter only matched dotted duplicates | Match exact owned objects and verify scene membership | Count intended appendages and inspect the rear |
 | L31 | Subdivision of dense cut-surface caps stalled a small preview | Profile geometry evaluation; omit unnecessary subdivision or rebuild cap topology | Save first and compare build/evaluation timing |
 
+| L32 | A downloadable model listing still required authenticated acquisition | Separate preview discovery, download, import, and mesh inspection states | Actual local source file and attribution before claiming geometry comparison |
+| L33 | Appended parts scattered when reparented using stale world transforms | Update dependency graph after linking and before matrix capture | Inspect full imported model and reopen the saved comparison |
+| L34 | Cleaner surfaces changed shoe proportions relative to an older checkpoint | Review fixed orthographic profiles and named landmarks independently of smoothness | Recorded transforms, pose caveats, and visual comparison |
+| L35 | Git-ignored binary models would leave progress without an editable remote backup | Publish versioned checkpoints with hashes and restore instructions | Verify uploaded asset sizes/digests and preserve rebuild inputs |
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).
@@ -52,3 +57,5 @@ For L22–L25, follow [hands and gloves](hands.md); the observed benchmark cover
 For L26–L28, follow [fast model iteration](model-iteration.md).
 
 For L29–L31, use the regional repair steps in [fast model iteration](model-iteration.md).
+
+For L32–L35, follow [reference-model comparison](reference-comparison.md).
