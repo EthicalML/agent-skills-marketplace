@@ -78,6 +78,11 @@ For L49, follow [animation](../references/animation.md). In-place contact checks
 
 For L50–L52, follow [animation libraries](animation-library.md).
 
+| L53 | An arbitrary hand axis produced back-and-forth wrist flexion instead of a side-to-side wave | Derive the palm normal from anatomical landmarks and rotate the hand around it | Fixed authored arm transforms plus palm-axis rotation and extreme-pose visual checks |
+| L54 | A user rejected procedural talking despite valid jaw animation | Build approved speech poses, then map timed audio cues; keep gestures separate | Audio/visual benchmark with closures, vowels and silence |
+
+For L53–L54, follow [animation libraries](animation-library.md) and [speech animation](speech-animation.md).
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).

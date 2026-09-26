@@ -31,3 +31,5 @@ In the tested library, a raised glove overlapped the ear in the first preview. W
 ## 5. Save the tools at their tested scope
 
 Keep bone names, axes, gait parameters and gesture recipes in the project until tested on another rig. The generic strip helper was exercised on a saved six-Action library and with overlap, reversed range, zero repetition and excessive blend rejection. No automatic retargeting or speech-sync capability is implied. Record timings, masks, previews and limitations in the project; refresh this workflow only with demonstrated findings.
+
+For user-rejected talking or audio-synchronized speech, follow [speech animation](speech-animation.md). For a side-to-side wave, derive the rotation axis from the palm plane and distinguish it from wrist flexion. Finger-root/wrist landmarks identified the useful axis on one rig; a covariance estimate over a small weighted vertex subset did not. Verify the arm holds still during the wave phase and inspect both hand-rotation extremes.
