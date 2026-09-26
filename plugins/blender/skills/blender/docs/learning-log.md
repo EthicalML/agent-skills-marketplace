@@ -51,6 +51,14 @@ Keep private assets and logs in the project. This log records reusable findings;
 | L38 | Rotated local-box corners overstated ear dimensions and caused an undersized fit | Measure evaluated world-space vertices for quantitative fitting | Compare tight extents and rendered silhouette |
 | L39 | Matching head/ear extents still left an incorrect muzzle and shoe silhouette | Treat dimensions, anatomy, appearance, and rigging as separate gates | Keep incomplete static trials separate from accepted assets |
 
+| L40 | Rest-mode eyelids covered pupils in a supplied rig; moving pupil geometry would have treated the wrong cause | Inspect occluding parts; preserve facial pose while resetting only the intended body transforms | Face render and eye-region ray hits before and after reset |
+| L41 | A neutral-looking model did not establish complete rig readiness | Preserve mesh/UV/weight fingerprints; restore snapshots between bounded bone tests | Fresh-file reopen plus explicitly limited static pose evidence |
+| L42 | A compact-support muzzle edit preserved pins and topology but made the profile pointed | Reject it for likeness; use explicit lip, cheek, and mouth-corner structure next | Identical baseline/candidate profile cameras plus fresh coordinate comparison |
+
+| L43 | Blender exited zero after a script traceback | Require a completion report and inspect the log before trusting artifacts | Fresh artifact validation rather than process exit code alone |
+
+For L40–L43, follow [bounded asset spikes](asset-spikes.md). Pose-transform snapshots do not capture animation, constraints, or rest data.
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).

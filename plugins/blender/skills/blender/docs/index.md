@@ -5,6 +5,7 @@ Use this index when a task needs more than connection setup or a simple scene ed
 | Task or symptom | Read next | Evidence level |
 | --- | --- | --- |
 | Match proportions against a 3D reference or compare checkpoints | [Reference-model comparison](reference-comparison.md) | Local checkpoint pair and one external blend tested; static regional fitting remains bounded |
+| Choose between adapting a rigged asset and independently rebuilding it | [Bounded asset spikes](asset-spikes.md) | One pose-preserving adaptation reviewed; bounded muzzle edit rejected for likeness |
 | Reconstruct likeness from images | [Image reconstruction](../references/reconstruction.md), then [local Apple Silicon generation](../references/local-image-to-3d.md) when using that backend | Tested local candidates; hidden surfaces and deformation remain separate checks |
 | Local edits take too long, or the model is still changing | [Fast model iteration](model-iteration.md) | Tested static closeup loop; animation deferred |
 | Recognizable asset, poor finish | [Polish workflow](../references/asset-polish.md), then [regional surface experiments](regional-surfaces.md) | Research plus bounded regional trials; not automatic production retopology |

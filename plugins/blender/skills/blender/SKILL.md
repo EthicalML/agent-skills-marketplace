@@ -42,7 +42,7 @@ If external assets or model generation would help the brief, follow [references/
 
 ## 3. Iterate with visual evidence
 
-For a 3D reference or side-by-side proportion comparison, follow [docs/reference-comparison.md](docs/reference-comparison.md). Verify acquisition and imported transforms before measuring or fitting.
+For a 3D reference or side-by-side proportion comparison, follow [docs/reference-comparison.md](docs/reference-comparison.md). Verify acquisition and imported transforms before measuring or fitting. When choosing between adapting a supplied model and rebuilding against it, follow [bounded asset spikes](docs/asset-spikes.md).
 
 For model polish, default to static, targeted reviews through [docs/model-iteration.md](docs/model-iteration.md). Do not render a full animation for a local mesh change. Separate model acceptance from later motion and export checks.
 
