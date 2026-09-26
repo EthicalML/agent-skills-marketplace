@@ -27,3 +27,12 @@ This bounded method does not create anatomical eye sockets or eyelids. An old ey
 ## Use external models as evidence
 
 Record author, model URL, license, and whether you examined a thumbnail, interactive viewer, or downloaded mesh. Public previews support silhouette observations; they do not establish topology, rig quality, or file contents. Prefer sources with clear asset licenses, preserve attribution, and follow [asset access](../references/assets.md) for actual imports. Never describe a located download as a successfully inspected source model.
+
+## Repair the whole visible region
+
+1. For torn shoulders, rear fragments, or cracked shoes, inventory object bounds and surface ownership before editing. A legacy mesh can contain several body regions beneath newer replacement parts. Inspect rear and side views; a front-only pass can miss folded shells and duplicate appendages.
+2. If damage is widespread, replace the affected region with clean geometry instead of transferring its cracks onto a new surface. For a continuous stylized shoulder, connect the torso and arm surfaces and inspect the axilla; separate overlapping joint spheres retain visible seams even when each part is smooth. Keep garment/cuff boundaries deliberate.
+3. Confirm replacement ownership using exact object identities and scene membership. A prefix ending in a dot can match numbered duplicates while missing the original unsuffixed object. Check counts of intended appendages and inspect the rear after replacement.
+4. Review the new silhouette as well as smoothness. Joined shorts volumes can create bulbous hems; rounded shoe volumes need intentional toe, heel, ankle, and sole shapes. A crack-free sphere is not automatically a convincing shoe. Preserve the earlier candidate and change only the defective construction parameters.
+5. Save before preview rendering. If a small still stalls, inspect evaluation before lowering samples. In an observed case, large polygon caps on cut shorts made subdivision stencil construction very slow; omitting unnecessary subdivision on the dense shorts restored the review loop. For reusable low-resolution geometry, design suitable cap topology instead.
+6. Reopen the result and inspect evaluated topology against each region's intended boundaries. Keep static validation separate from weight/deformation validation: newly connected shoulders with provisional weights have not passed the old animation merely because the neutral pose looks better.

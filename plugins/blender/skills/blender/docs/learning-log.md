@@ -37,6 +37,10 @@ Keep private assets and logs in the project. This log records reusable findings;
 | L27 | Smooth shading left ridges where glove volumes joined | Change surface geometry and review smoothing/subdivision with shape landmarks | Thumb web, finger size, cuff fit, front and oblique views |
 | L28 | Separate thick eye ellipsoids looked detached from the face | Test shallow face-following layers for a static cartoon treatment | Oblique relief/intersection checks; do not claim eyelid or blink support |
 
+| L29 | Front-focused review missed torn rear shells and overlapping shoulder pieces | Inventory regional ownership; replace damaged legacy surfaces and review rear/side | No residual flaps; intended continuous shoulder and appendage counts |
+| L30 | A replacement left the original unsuffixed tail because its name filter only matched dotted duplicates | Match exact owned objects and verify scene membership | Count intended appendages and inspect the rear |
+| L31 | Subdivision of dense cut-surface caps stalled a small preview | Profile geometry evaluation; omit unnecessary subdivision or rebuild cap topology | Save first and compare build/evaluation timing |
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).
@@ -46,3 +50,5 @@ Do not erase failed approaches when a later version succeeds. Record the conditi
 For L22–L25, follow [hands and gloves](hands.md); the observed benchmark covers an open glove and rigid wave, not independent finger articulation.
 
 For L26–L28, follow [fast model iteration](model-iteration.md).
+
+For L29–L31, use the regional repair steps in [fast model iteration](model-iteration.md).
