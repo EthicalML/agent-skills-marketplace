@@ -98,3 +98,13 @@ For L29–L31, use the regional repair steps in [fast model iteration](model-ite
 For L32–L35, follow [reference-model comparison](reference-comparison.md).
 
 For L36–L39, read the external-blend findings in [reference comparison](reference-comparison.md).
+
+## First audio-driven speech prototype
+
+| ID | Observation | Recovery | Required check |
+| --- | --- | --- | --- |
+| L55 | Small jaw oscillation inherited a large open-mouth supplied pose | Author an absolute closure and inspect it separately from the eye expression | Front/oblique closure and an open vowel |
+| L56 | Timing automation provides cues but cannot create convincing lip shapes | Map a reviewed pose bank; label cheek-narrowing approximations honestly | Rounded/puckered lips and contacts need their own visual acceptance |
+| L57 | Integer-frame checking sampled a short closure transition | Keep fractional cue timestamps and check the actual cue center | Final composed NLA closure, audio origin and removal of competing jaw channels |
+
+Follow [speech animation](speech-animation.md). Rhubarb CLI was executed on one short phrase; the optional Blender NG add-on was researched only.

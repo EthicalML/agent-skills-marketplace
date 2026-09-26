@@ -1,6 +1,6 @@
 # Build talking from speech and mouth poses
 
-Use this workflow when a jaw oscillator or silent gesture does not meet the speech requirement. Treat audio timing, facial deformation and expressive performance as separate work. The initial backend comparison is researched, not an installed or validated speech system.
+Use this workflow when a jaw oscillator or silent gesture does not meet the speech requirement. Treat audio timing, facial deformation and expressive performance as separate work. Rhubarb CLI timing and a jaw/cheek pose bank have been tested on one short utterance; broader speech quality remains unvalidated.
 
 ## 1. Audit and approve mouth poses first
 
@@ -10,7 +10,7 @@ Start with a compact bank covering neutral, closed lips, open/wide/rounded/pucke
 
 ## 2. Select a timing backend after the pose bank passes
 
-[Rhubarb](https://github.com/DanielSWolf/rhubarb-lip-sync) offers timed cartoon-mouth cues and JSON output from audio, with optional dialogue text. A small adapter could drive approved 3D poses from those cues; it does not build the poses. This is the proposed first baseline for a stylized character.
+[Rhubarb](https://github.com/DanielSWolf/rhubarb-lip-sync) offers timed cartoon-mouth cues and JSON output from audio, with optional dialogue text. A small adapter could drive approved 3D poses from those cues; it does not build the poses. Version 1.14.0 ran locally on a Mac and produced cues for one short stylized-character benchmark. The [Rhubarb Lip Sync NG add-on](https://github.com/Premik/blender_rhubarb_lipsync_ng) offers capture, bone/shape-key Action mapping and NLA baking as a Blender UI alternative; its compatibility with the tested Blender 5.2 session has not been verified.
 
 [Montreal Forced Aligner](https://montreal-forced-aligner.readthedocs.io/en/stable/user_guide/index.html) is an alternative when audio/transcript phone alignment is needed. It still requires a mapping from phones to the character's poses.
 
@@ -28,4 +28,8 @@ Bake a separate facial Action. Keep head movement, blinks, expression and hand g
 
 Review at least one short sentence with closures, distinct vowels and silence; inspect transitions and profile views for penetration or lost identity. Test another phrase before calling the mapping reusable. Log what was authored, inferred, aligned, reviewed and still untested. A convincing silent gesture is not lip-sync, and correct timing cannot fix poor mouth shapes.
 
-The observed initial character had facial bones but no authored shape keys; its procedural talking clip was rejected by the user. Research and rig audit are complete. An approved mouth-pose bank and an audio-driven benchmark remain pending.
+The tested character had facial bones but no shape keys. A small jaw oscillator was applied on top of a supplied open smile, so it never reached closure. An absolute closed-jaw pose fixed that while preserving the eye expression. Inspect supplied pose offsets before deciding that new facial geometry is necessary.
+
+One three-second audio benchmark now drives a separate facial Action from 12 Rhubarb cues. Front/oblique pose reviews and reopened-file cue-center checks verified closure, opening, silence, channel ownership and aligned sound placement. Cheek-driven E/F narrowing remains an approximation: true puckering, teeth/lip contact, tongue articulation, another phrase and user playback acceptance remain pending. No automatic facial-rig generation is implied.
+
+For short cues, retain fractional frames and test the cue center. Rounding a closure check to a nearby integer can sample its transition instead. Keep the audio origin and cue-to-frame origin identical, and remove the placeholder jaw curves before evaluating the composed Action. Inspect closure in the final NLA stack; correct standalone facial keys can still blend against an open base pose.
