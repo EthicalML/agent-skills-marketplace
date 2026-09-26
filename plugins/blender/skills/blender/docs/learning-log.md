@@ -46,6 +46,11 @@ Keep private assets and logs in the project. This log records reusable findings;
 | L34 | Cleaner surfaces changed shoe proportions relative to an older checkpoint | Review fixed orthographic profiles and named landmarks independently of smoothness | Recorded transforms, pose caveats, and visual comparison |
 | L35 | Git-ignored binary models would leave progress without an editable remote backup | Publish versioned checkpoints with hashes and restore instructions | Verify uploaded asset sizes/digests and preserve rebuild inputs |
 
+| L36 | An asset download contained a nested archive; unrelated source image paths obscured real dependencies | Inspect archive levels and pack material-used textures | Source hash, safe extraction, material appearance review |
+| L37 | Rest mode occluded pupils although the supplied pose rendered correctly | Preserve supplied pose and label rest-derived measurements | Compare original appearance before interpreting rest geometry |
+| L38 | Rotated local-box corners overstated ear dimensions and caused an undersized fit | Measure evaluated world-space vertices for quantitative fitting | Compare tight extents and rendered silhouette |
+| L39 | Matching head/ear extents still left an incorrect muzzle and shoe silhouette | Treat dimensions, anatomy, appearance, and rigging as separate gates | Keep incomplete static trials separate from accepted assets |
+
 ## Follow the applicable procedure
 
 For L01–L08, read [reconstruction](../references/reconstruction.md), then [polish](../references/asset-polish.md) when a clean rebuild is required. For L09–L14, read [animation](../references/animation.md), [jobs](../references/jobs.md), or [delivery](../references/delivery.md) according to the failing stage. New local surface trials and their limitations belong in [regional surface experiments](regional-surfaces.md).
@@ -59,3 +64,5 @@ For L26–L28, follow [fast model iteration](model-iteration.md).
 For L29–L31, use the regional repair steps in [fast model iteration](model-iteration.md).
 
 For L32–L35, follow [reference-model comparison](reference-comparison.md).
+
+For L36–L39, read the external-blend findings in [reference comparison](reference-comparison.md).
