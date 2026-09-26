@@ -1,0 +1,13 @@
+# Secondary motion and camera-facing features
+
+A tail or similar chain can use a separate rotation-only Action layered above body motion. Parameterize a traveling wave by cumulative bone length so a chain with many tiny tip bones does not concentrate the wave there. Add a suitable resting curve first: a weak wave on a straight chain can still look like a rigid rod. Bake an explicit endpoint matching the first pose, repeat the Action, and check the actual preview-loop phase. Choose amplitude from rendered views and floor/body clearance, not only a smooth mathematical curve.
+
+For stylized ears, distinguish camera-facing surface orientation from camera-relative placement. Rotating one shared ear bone cannot independently preserve both ear discs and their spacing. One tested solution preserved the original mesh hidden, split evaluated ear geometry, and parented the two copies to a head-following anchor whose world orientation copies the scene camera. This keeps the silhouette broad while the head turns. It is an intentional camera-dependent effect; it does not target arbitrary viewport orbiting, and a camera switch must update the constraint target. Retain UVs/materials and inspect front, oblique and rear views before accepting the result.
+
+A 20-bone tail and two-ear treatment were tested on one character. Integer-frame bone-tip clearance, local rotation loop closure and camera-normal alignment passed. Those checks do not establish full surface collision avoidance, natural behavior in arbitrary shots or a general appendage-rigging tool.
+
+## Stock motion and retargeting
+
+[Mixamo](https://helpx.adobe.com/creative-cloud/faq/mixamo-faq.html) and [Rokoko](https://www.rokoko.com/pricing) offer reusable humanoid motion. Retargeting maps it onto the target rig; it does not require replacing the target's face/tail/ear system. Normalize rest pose and scale, map body bones, bake, then inspect root motion, feet, shoulders and hand/head contacts. Keep unmapped character-specific controls intact. Use a single walk and a single gesture as a bounded first test before importing a whole library.
+
+The [Rokoko Blender workflow](https://support.rokoko.com/hc/en-us/articles/4410463481489-Retargeting-an-animation-in-Blender-Plugin-1-1-and-above) and [Blender Retarget extension](https://extensions.blender.org/add-ons/retarget/) are researched candidates, not validated integrations in this skill. Exaggerated character proportions can require substantial cleanup. A final acting pass adjusts anticipation, strong poses, asymmetric accents and holds to the dialogue. Applying stock mocap alone does not guarantee the requested cartoon mannerisms.
