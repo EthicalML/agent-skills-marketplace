@@ -42,6 +42,8 @@ If external assets or model generation would help the brief, follow [references/
 
 ## 3. Iterate with visual evidence
 
+For model polish, default to static, targeted reviews through [docs/model-iteration.md](docs/model-iteration.md). Do not render a full animation for a local mesh change. Separate model acceptance from later motion and export checks.
+
 Read [references/iteration.md](references/iteration.md) for rendering, multiple views, and saved-script patterns. After a meaningful change, inspect targeted scene data and capture an image. Open that image; a successful command or an existing PNG does not prove visual quality.
 
 Use viewport captures for geometry and placement. Use `B.render_preview(...)` for material, lighting, camera, and color decisions. It checkpoints the live scene and renders in a separate Blender process. Poll its job, then open the returned image path. Compare against the brief, identify specific weaknesses, and make the next change accordingly. Use multiple cameras or frames when one view could conceal errors. Keep useful earlier previews for comparison.

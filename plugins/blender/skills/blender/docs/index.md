@@ -5,6 +5,7 @@ Use this index when a task needs more than connection setup or a simple scene ed
 | Task or symptom | Read next | Evidence level |
 | --- | --- | --- |
 | Reconstruct likeness from images | [Image reconstruction](../references/reconstruction.md), then [local Apple Silicon generation](../references/local-image-to-3d.md) when using that backend | Tested local candidates; hidden surfaces and deformation remain separate checks |
+| Local edits take too long, or the model is still changing | [Fast model iteration](model-iteration.md) | Tested static closeup loop; animation deferred |
 | Recognizable asset, poor finish | [Polish workflow](../references/asset-polish.md), then [regional surface experiments](regional-surfaces.md) | Research plus bounded regional trials; not automatic production retopology |
 | Repair thumb placement, finger proportions, or cuff joins | [Hands and gloves](hands.md), then [quality review](quality-review.md) | Open-glove and rigid-wave iterations; finger articulation remains separate |
 | Decide which quality check is missing | [Quality review](quality-review.md) | Failures observed in reconstruction, glove repair, and export runs |
