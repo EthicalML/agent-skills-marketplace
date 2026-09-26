@@ -58,6 +58,12 @@ Rest-space vertex colors and separate colored parts support a nine-bone wave, tw
 
 A GLB with one skin and one clip initially omitted object-scale eye blinks. Eye-bone animation retained those channels. A subsequent reimport exposed hand deformation from nonuniform parent scaling with disabled scale inheritance. Baking evaluated joint matrices into independent joints in the isolated export copy fixed it. Rest, closed-eye, maximum-wave, bow, and final-frame comparisons of evaluated world-space mesh bounds agree within 0.000001 scene units. The editable blend retains its original joint hierarchy. Private source images and generated assets remain outside this repository.
 
+## Reconstruction polish research and availability probe
+
+A follow-up review identified remaining surface, likeness, joint, and eyelid gaps despite successful hand topology and export checks. The conditional asset-polish reference now captures regional rebuilding, controlled cage fitting, loop/patch design, detail and material transfer, deformation, visual regression, and portable delivery as separate workstreams. Artist-authored Blender Studio and CG Cookie articles, Blender manuals, and RetopoFlow documentation inform the methods; proposed programmatic translations are labeled as proposals.
+
+An isolated Blender 5.2.2 factory-scene probe constructed Mirror, Subdivision, Shrinkwrap, Smooth, Laplacian Smooth, Corrective Smooth, Multires, Data Transfer, Lattice, Mesh Deform, Surface Deform, and Geometry Nodes modifiers. It found the QuadriFlow, voxel remesh, bake, Multires Reshape, and UV unwrap operator schemas, constructed shape keys, and imported BVH/KD-tree types. This establishes API availability only. It does not validate automatic retopology, selective projection, facial rig quality, a third-party add-on, or autonomous production polish. Those require the regional asset benchmarks described in the workflow.
+
 ## Scope of confidence
 
 This checks a representative iterative modeling/render/export workflow, not every Blender feature or every upstream service. Paid model-generation APIs and credentialed asset libraries require separate acceptance tests with authorized accounts. File-reimport success is not proof of visual equivalence, rig deformation, or simulation-cache portability; those require task-specific evidence.
