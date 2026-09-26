@@ -41,3 +41,5 @@ For vivid cartoon palettes, separate material colour from view transform, exposu
 Maintain an explicit selection manifest after user review. Removing a rejected character from the UI while leaving assembly driven by a directory glob can silently reintroduce it on the next rebuild. Keep prior checkpoints for reproduction and exclude retired variants from the current assembled scene and normal selector.
 
 When a pose correction moves costume vertices as well as the arm, rebuild the collision BVH after each correction. A surface cached before the solve can falsely report clearance against the old garment shape. Audit the saved file independently and rerun only flagged clips; preserve unaffected animation channels with before/after hashes.
+
+For pose-matrix IK edits, preserve the source local scale explicitly. Matrix decomposition under rotated parents can introduce unkeyed scale or shear: clearance improves while gloves visibly stretch. Reevaluate the keyed frame inside the solve, reopen the saved file, compare arm/hand scale with the source, and inspect shape as well as contact distances. Do not assume unit scale unless the source was checked.
