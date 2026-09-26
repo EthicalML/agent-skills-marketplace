@@ -1,6 +1,6 @@
 # INSTALL.md — guided install gate
 
-> **For the AI assistant reading this file:** follow these steps exactly. This is a *pre-install gate* and the standard way to install from this marketplace. Do not install anything until the prerequisites for a selected plugin pass. Never print or persist secret values (this marketplace currently requires none — say so if asked).
+> **For the AI assistant reading this file:** follow these steps exactly. This is a *pre-install gate* and the standard way to install from this marketplace. Do not install anything until the prerequisites for a selected plugin pass. Never print or persist secret values (core workflows require none — say so if asked).
 >
 > **Runtime:** Steps 3–5 are written for **Copilot CLI**. If you are running under **Claude Code**, do Steps 0–2 and 6–7 the same way, and use the [Claude Code](#claude-code-use-in-place-of-steps-35) section in place of Steps 3–5.
 
@@ -24,6 +24,7 @@ command -v gh && gh --version       # gh (clone auth)
 Plugin-specific runtimes — check only for the plugins in scope:
 
 - `workflow-automations`: Node.js 20+ (`command -v node && node -v`) for `site-capture` (the skill guides the Playwright install on first use), and Python 3 with pip (`command -v python3`) when the `create-agent-harness` template will actually be run.
+- `blender` (optional): Python 3.10+, Blender GUI, and its pinned local add-on; follow [Blender setup](plugins/blender/skills/blender/references/setup.md). No MCP server is launched.
 - `dev-utilities` and `codebase-automations`: no additional runtime (`codebase-automations` uses the GitHub CLI already required above).
 
 If a required runtime is missing, guide the user to install it (or skip that plugin), then continue.
@@ -38,7 +39,7 @@ Install the **default set** unless the user opts out. Confirm the list with them
 - `workflow-automations` — scripted browser capture of a website as video or GIF (`site-capture`), and build a skill-driven Python agent (`create-agent-harness`) against any OpenAI-compatible endpoint
 - `codebase-automations` — Dependabot PR diagnosis, fixing, and safe merging (`dependabot-fix`, `dependabot-fix-all`)
 
-No plugin in this marketplace requires an access token or an MCP server. There is nothing to create, store, or validate credential-wise — state that plainly and move on.
+The default plugins and Blender scene workflows require no access token or MCP server. Blender uses a local add-on listener; optional third-party asset/generation services may require their own credentials.
 
 ## Step 2 — Get the marketplace repo (before installing)
 
@@ -133,4 +134,4 @@ The runtime install itself only fetches a **read-only cache** (Claude Code: `~/.
 - Newly added plugin "not found" on install → refresh the marketplace metadata (Step 6), then retry.
 - Installed plugin "not found" on **update** → likely a breaking change (rename/removal); follow the recovery path in Step 7.
 - A skill installed but not appearing → confirm you are in a **new session** (or ran `/reload-plugins --force`), then check the installed cache exists for that plugin.
-- Never claim a credential is needed — this marketplace requires none; if a tool asks for one, something else is wrong and should be reported, not worked around.
+- Default workflows require no credentials. Optional Blender asset/generation integrations may require service credentials; follow their setup and never persist secrets in the repository.

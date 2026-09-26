@@ -24,8 +24,15 @@ for check in "${checks[@]}"; do
     status=1
   fi
 done
+echo "==> Blender client and job tests"
+if python3 -m unittest discover -s plugins/blender/tests -p 'test_*.py'; then
+  echo "PASS Blender client and job tests"
+else
+  echo "FAIL Blender client and job tests"
+  status=1
+fi
 if [ "$status" -eq 0 ]; then
-  echo "Validation passed: all six checks succeeded."
+  echo "Validation passed: all seven checks succeeded."
 else
   echo "Validation failed: one or more checks did not succeed."
 fi
