@@ -64,6 +64,14 @@ A follow-up review identified remaining surface, likeness, joint, and eyelid gap
 
 An isolated Blender 5.2.2 factory-scene probe constructed Mirror, Subdivision, Shrinkwrap, Smooth, Laplacian Smooth, Corrective Smooth, Multires, Data Transfer, Lattice, Mesh Deform, Surface Deform, and Geometry Nodes modifiers. It found the QuadriFlow, voxel remesh, bake, Multires Reshape, and UV unwrap operator schemas, constructed shape keys, and imported BVH/KD-tree types. This establishes API availability only. It does not validate automatic retopology, selective projection, facial rig quality, a third-party add-on, or autonomous production polish. Those require the regional asset benchmarks described in the workflow.
 
+## Regional head surface benchmark and documentation routing
+
+A bounded head experiment compared matching front, oblique, profile, and rear views. Head-only voxel remeshing produced zero non-manifold edges but severe visible perforations and was rejected. A filtered radial shell used 24,384 samples with about 83.4% accepted hits; it closed the surface but retained broad lumps and weakened facial/profile features, so it was rejected as the final candidate too.
+
+An authored controlled surface with separate smooth ears/nose produced cleaner views. A further refinement introduced a recessed smile, corrected an inherited jaw/neck fragment, and interpolated a signed material-region field before shader thresholding to remove stepped color boundaries. The resulting head has 50,014 vertices, zero non-manifold edges, and Euler characteristic 2. It remains a surface prototype: reference likeness, facial loops, proper eyelids, body polish, and portable shader baking are not established. A consolidated project builder recreates the prototype from the preserved source without depending on rejected trials.
+
+The skill now routes complex tasks through docs/index.md, with a learning log, regional experiment procedure, quality gates, and workstream statuses. Existing reference paths remain valid. Project-specific assets, scripts, and private evidence remain outside the public repository.
+
 ## Scope of confidence
 
 This checks a representative iterative modeling/render/export workflow, not every Blender feature or every upstream service. Paid model-generation APIs and credentialed asset libraries require separate acceptance tests with authorized accounts. File-reimport success is not proof of visual equivalence, rig deformation, or simulation-cache portability; those require task-specific evidence.

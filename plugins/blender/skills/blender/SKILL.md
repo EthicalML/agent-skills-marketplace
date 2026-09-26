@@ -26,6 +26,8 @@ For Python composition, add `<skill>/scripts` to `sys.path` and `import blender 
 
 Inspect `B.scene()` and `B.screenshot(<absolute preview path>)`, then open the image with the host's image viewer. Follow `next_offset` when a complete object list matters; use collection and object queries for large scenes. Establish the requested deliverables, visual references, dimensions, style, and constraints from the request. Ask only for missing information that prevents a useful first iteration.
 
+For reconstruction, repair, animation quality, or a recurring failure, read [docs/index.md](docs/index.md) and load only the matching workflow. Record a baseline defect and its acceptance evidence before editing; distinguish researched methods from implemented and asset-validated capabilities.
+
 ## 2. Preserve the starting point and build a blockout
 
 Before substantial edits, call `B.checkpoint(<absolute .blend path>)`; it saves a copy without changing the active file path. Use a task-specific collection, or a separate scene for independent work. Preserve existing objects, selection, and mode unless the task needs to change them. Reinspect after user edits or when returning to a scene; previous object information can be stale.
@@ -51,5 +53,7 @@ For long renders, animation, baking, or scripted batch work, read [references/jo
 ## 4. Validate and deliver
 
 Read [references/delivery.md](references/delivery.md). Run `B.validate()` and targeted object/material checks appropriate to the output. Non-manifold geometry is not automatically wrong for an open surface; apply the brief's requirements. Validate dimensions, resource availability, camera framing, and the relevant animation frames.
+
+Before reporting completion, update the project learning log with attempts, settings, evidence paths, rejected candidates, accepted improvements, and remaining gaps. Follow [the documentation capture steps](docs/index.md#capture-a-learning-during-work) to add portable findings to the relevant workflow and workstream status without copying private assets into the skill.
 
 Save the requested .blend and pack resources when portability requires it. Export only intended objects. Reopen the saved file or reimport the export in an isolated background job and check its report. Inspect a final render, not just a viewport image, when delivering rendered work. Report file paths, evidence of verification, and any unverified limitation. Keep temporary previews, logs, and benchmark artifacts under the project's ignored `tmp/`; put final outputs where requested.

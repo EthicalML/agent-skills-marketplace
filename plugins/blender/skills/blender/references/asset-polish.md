@@ -10,6 +10,8 @@ Render fixed front, oblique, profile, rear, and closeup views in neutral clay, w
 
 Record camera assumptions: unrelated screenshots may use different perspective, poses, and even models. Do not average incompatible views or fit their pixel coordinates as if calibrated. Mark inferred rear anatomy as a design decision, not recovered evidence.
 
+For tested failure cases and the bounded regional procedure, read [regional surface experiments](../docs/regional-surfaces.md). Use [quality review](../docs/quality-review.md) to distinguish a smooth prototype from a reference-matched, deformable character.
+
 ## 2. Choose repair, replacement, or another reconstruction per region
 
 Classify defects before selecting tools:
