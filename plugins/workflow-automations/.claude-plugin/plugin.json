@@ -1,7 +1,7 @@
 {
   "name": "workflow-automations",
-  "description": "Automate practical workflows: scripted website walkthrough captures, skill-driven Python agent harnesses for OpenAI-compatible endpoints, and local Streamlit data apps with browser-driven verification.",
-  "version": "0.4.0",
+  "description": "Automate practical workflows: scripted website walkthrough captures, skill-driven Python agent harnesses for OpenAI-compatible endpoints, and local Streamlit data apps with browser-driven verification, and reading or acting on websites in the user's own logged-in Chrome through playwright-cli.",
+  "version": "0.6.0",
   "keywords": [
     "browser",
     "capture",
@@ -13,7 +13,10 @@
     "openai-compatible",
     "streamlit",
     "polars",
-    "playwright"
+    "playwright",
+    "chrome",
+    "playwright-cli",
+    "web automation"
   ],
   "skills": [
     "./skills/"
