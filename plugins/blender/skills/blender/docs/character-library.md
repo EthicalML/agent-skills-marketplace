@@ -43,3 +43,11 @@ Maintain an explicit selection manifest after user review. Removing a rejected c
 When a pose correction moves costume vertices as well as the arm, rebuild the collision BVH after each correction. A surface cached before the solve can falsely report clearance against the old garment shape. Audit the saved file independently and rerun only flagged clips; preserve unaffected animation channels with before/after hashes.
 
 For pose-matrix IK edits, preserve the source local scale explicitly. Matrix decomposition under rotated parents can introduce unkeyed scale or shear: clearance improves while gloves visibly stretch. Reevaluate the keyed frame inside the solve, reopen the saved file, compare arm/hand scale with the source, and inspect shape as well as contact distances. Do not assume unit scale unless the source was checked.
+
+## Temporal and ensemble review
+
+Validate motion derivatives as well as poses. Per-frame glove avoidance can create abrupt shoulder changes, while smoothing can undo collision clearance. A tested short run used a periodic arm fit plus a smooth clearance margin; the corrected result needed a second fit and fresh saved-file contact/scale checks. Preserve other channels when merging parallel repairs. Exact loop endpoints alone do not establish smooth motion.
+
+Inventory authored facial expressions before adding geometry. An unused Smile shape and a single overdriven vowel produced flat expressions and poor speech despite valid animation curves. Use target-specific amplitude limits, map phonetic categories deliberately (a recognizer's closed-lip A need not mean the donor's vowel A), and verify leading/trailing silence on the saved output. Keep the greeting smile separate from speech closure.
+
+For multi-character comparison, assemble complete actor dependencies under placement roots and use one camera, light rig and display treatment. Retain hidden deformation helpers; parent hierarchy roots only to avoid double transforms. Remap both camera constraints and driver targets. Sample the full animation composition when layered Actions and NLA contribute simultaneously. Store actor choice, height, position, clip and timing in a small configuration and rebuild after source updates. Verify all actors move, combined loops match, source studios/audio are excluded, and waves remain readable in a shared frame.
