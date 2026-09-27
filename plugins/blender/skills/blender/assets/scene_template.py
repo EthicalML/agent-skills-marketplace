@@ -121,7 +121,7 @@ orb = mesh_obj("Orb", lambda bm: bmesh.ops.create_uvsphere(bm, u_segments=96, v_
 spin(orb, 0.5)
 
 floor_mat, nt, out = new_mat("Floor")
-fp = node(nt, "ShaderNodeBsdfPrincipled", **{"Base Color": (0.01, 0.01, 0.012, 1), "Roughness": 0.25})
+fp = node(nt, "ShaderNodeBsdfPrincipled", **{"Base Color": (0.01, 0.01, 0.012, 1), "Roughness": 0.5})
 nt.links.new(fp.outputs[0], out.inputs["Surface"])
 floor = mesh_obj("Floor", lambda bm: bmesh.ops.create_grid(bm, x_segments=1, y_segments=1, size=200), floor_mat, smooth=False)
 
@@ -136,8 +136,9 @@ bg = wn.nodes["Background"]
 dark = wn.nodes.new("ShaderNodeBackground"); dark.inputs["Color"].default_value = (0.006, 0.008, 0.014, 1)
 tc = wn.nodes.new("ShaderNodeTexCoord")
 sep = wn.nodes.new("ShaderNodeSeparateXYZ"); wn.links.new(tc.outputs["Generated"], sep.inputs[0])
-studio = ramp(wn, [(0.45, (0.0, 0.0, 0.0)), (0.62, (0.25, 0.2, 0.16)), (0.66, (2.5, 2.2, 1.9)), (0.7, (0.2, 0.18, 0.16)),
-                   (0.9, (0.6, 0.65, 0.8)), (1.0, (1.5, 1.5, 1.6))])
+# Bright band kept high (fac ~0.8, ~35 deg up) so floors seen at grazing angles do not mirror it into flat grey.
+studio = ramp(wn, [(0.5, (0.0, 0.0, 0.0)), (0.74, (0.12, 0.1, 0.08)), (0.8, (1.0, 0.9, 0.8)), (0.86, (0.12, 0.1, 0.08)),
+                   (0.95, (0.5, 0.55, 0.7)), (1.0, (1.0, 1.0, 1.0))])
 zn = wn.nodes.new("ShaderNodeMath"); zn.operation = 'MULTIPLY_ADD'
 zn.inputs[1].default_value, zn.inputs[2].default_value = 0.5, 0.5   # z in [-1,1] -> [0,1]
 wn.links.new(sep.outputs["Z"], zn.inputs[0]); wn.links.new(zn.outputs[0], studio.inputs["Fac"])

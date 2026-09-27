@@ -51,7 +51,7 @@ Run `bl stills <name>.py --frames <first>,<middle>,<last> --preview --out tmp/st
 Open `contact.png` and judge it against this list, worst problem first:
 
 1. Exposure: frame not washed out or crushed. Haze density above about 0.01, or strong lights inside haze, fog the whole frame.
-2. Metals read as metal. If they look black or flat grey, they have nothing to reflect: the world must light them (the template's studio world) and the world `Volume` socket must stay empty.
+2. Metals read as metal. If they look black or flat grey, they have nothing to reflect: the world must light them (the template's studio world) and the world `Volume` socket must stay empty. A large floor or wall that looks flat grey is mirroring that world: raise its roughness, darken it, or move the world's bright band higher.
 3. Glows are coloured, not white. Lower emission strength and saturate the ramp; bloom supplies the glow.
 4. The subject is readable at this size, and the frame has a clear focal point and depth-of-field focus on it.
 5. Nothing interpenetrates, floats unintentionally, or ends in a visible edge (floor, haze box, backdrop).
@@ -66,7 +66,7 @@ Run `bl stills <name>.py --frames <eight evenly spaced frames, including each ca
 
 Run `bl stills <name>.py --frames <middle> --out tmp/full` without `--preview` to render one full-quality frame. It prints `BL_FRAME <n> <seconds>`. Multiply by the frame count for the render time. If it exceeds about 45 minutes, tell the user the estimate and offer lower resolution, fewer samples, or a shorter shot before starting.
 
-Run `bl animate <name>.py --out tmp/animate` as a background process (it can take a long time). Check progress by counting `tmp/animate/frames/f_*.png`. If it stops early, rerun the same command: it resumes from the frames already on disk. When it finishes it encodes `tmp/animate/<name>.mp4` and writes `tmp/animate/video_contact.png`.
+Run `bl animate <name>.py --out tmp/animate` as a background process (it can take a long time). Wait for it to finish; do not report completion before the MP4 exists. Check progress by counting `tmp/animate/frames/f_*.png`. If it stops early, rerun the same command: it resumes from the frames already on disk. When it finishes it encodes `tmp/animate/<name>.mp4` and writes `tmp/animate/video_contact.png`.
 
 Open `video_contact.png`. If a frame shows a defect, fix the script and rerun from step 4. Delete `tmp/animate/frames` before rerendering, or unchanged frames will be skipped.
 
