@@ -11,6 +11,7 @@ This repository is an open-source marketplace of portable agent skills and plugi
 | `dev-utilities` | `writing-skills`, `writing-agents-md`, `explain-code-walkthrough`, `standardize-agent-instructions`, `disk-cleanup` | Author reliable skills, keep agent instruction files short and followable, explain code changes, align instruction files across agent tools, and free disk space safely. |
 | `workflow-automations` | `site-capture`, `create-agent-harness`, `create-streamlit-app`, `verify-streamlit-app` | Record scripted website walkthroughs as video or GIF, build skill-driven Python agents against OpenAI-compatible endpoints, and scaffold local Streamlit data apps verified through a headless browser. |
 | `codebase-automations` | `dependabot-fix`, `dependabot-fix-all`, `release-repo` | Diagnose and safely merge Dependabot pull requests, or assess release conformance and run profile-driven releases with artifact validation. |
+| `blender` | `blender` | Build, light, animate, and render Blender scenes headlessly from Python scripts, iterating on rendered stills before delivering an MP4 and a .blend. |
 
 ## Installation
 
@@ -32,7 +33,7 @@ copilot plugin marketplace add EthicalML/agent-skills-marketplace   # Copilot CL
 copilot plugin install <plugin>@agent-skills-marketplace
 ```
 
-Replace `<plugin>` with `dev-utilities`, `workflow-automations`, or `codebase-automations`. INSTALL.md also covers follow-up installs, updates, and breaking-change recovery.
+Replace `<plugin>` with `dev-utilities`, `workflow-automations`, `codebase-automations`, or `blender`. INSTALL.md also covers follow-up installs, updates, and breaking-change recovery.
 
 ## Contributing
 

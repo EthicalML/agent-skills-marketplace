@@ -1,0 +1,16 @@
+{
+  "name": "blender",
+  "description": "Build, light, animate, and render Blender scenes headlessly from Python scripts, iterating on rendered stills before delivering an MP4 and a .blend.",
+  "version": "0.1.0",
+  "keywords": [
+    "blender",
+    "3d",
+    "render",
+    "animation",
+    "eevee",
+    "video"
+  ],
+  "skills": [
+    "./skills/"
+  ]
+}
