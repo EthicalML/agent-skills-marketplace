@@ -56,6 +56,13 @@ Open `contact.png` and judge it against this list, worst problem first:
 4. The subject is readable at this size, and the frame has a clear focal point and depth-of-field focus on it.
 5. Nothing interpenetrates, floats unintentionally, or ends in a visible edge (floor, haze box, backdrop).
 
+Once the frame is free of defects, judge it against the quality the brief asks for. A quick draft or a technical check can stop here. For anything described as polished, impressive, or for showing to others, keep going until all of these hold:
+
+- The hero has the detail its real counterpart would: bevelled edges, joints and fasteners that connect, wear or variation in the material. No part reads as a bare primitive, and nothing that should connect floats.
+- Lighting has a direction and contrast: a clear key, a rim or separation light, and shadow shaping the forms rather than flat, even light.
+- The environment supports the subject without competing: a surface, a backdrop, or atmosphere that gives depth, and no empty grey field.
+- The camera move has a purpose (reveal, follow, or orbit toward a hero angle), with focus on the subject.
+
 Fix the one or two biggest problems, rerun, and look again. Expect three to six passes. A command that exits cleanly proves nothing about how the image looks; only the image does.
 
 ## 5. Check the camera path
