@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Disk Cleanup Plan</title>
+<style>
+:root{--bg:#fafaf9;--card:#fff;--fg:#1c1917;--mut:#78716c;--line:#e7e5e4;--code:#f5f5f4;--acc:#2563eb}
+@media (prefers-color-scheme:dark){:root{--bg:#0c0a09;--card:#1c1917;--fg:#f5f5f4;--mut:#a8a29e;--line:#292524;--code:#292524;--acc:#60a5fa}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1100px;margin:0 auto;padding:24px 16px 80px}
+h1{margin:0 0 4px;font-size:26px}h2{margin:32px 0 8px;font-size:20px;display:flex;gap:10px;align-items:center}
+.sub,.muted{color:var(--mut)}.sub{margin:0 0 12px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:16px 0}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:12px}.stat b{display:block;font-size:22px}.stat span{color:var(--mut);font-size:13px}
+.bar{display:flex;height:30px;border-radius:6px;overflow:hidden;margin:12px 0 6px;border:1px solid var(--line)}
+.bar div{display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;margin:6px 0;padding:0 12px}
+summary{cursor:pointer;padding:9px 0;display:flex;gap:10px;align-items:center}summary b{flex:1}
+.sw{display:inline-block;width:10px;height:10px;border-radius:2px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+details table{border:0;margin-bottom:10px}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+td.sz{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600;text-align:right;width:70px}
+td.ck{width:34px}input[type=checkbox]{width:18px;height:18px;cursor:pointer}
+tr.done td:not(.ck){opacity:.45;text-decoration:line-through}
+.tag{font-size:12px;padding:2px 9px;border-radius:99px;color:#fff}
+code{background:var(--code);padding:2px 6px;border-radius:4px;font-size:12.5px;word-break:break-all}
+pre{background:var(--code);padding:10px;border-radius:6px;overflow-x:auto;font-size:13px;white-space:pre-wrap}
+.note{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:6px;padding:12px 14px;margin:10px 0}
+button{background:none;border:1px solid var(--line);color:var(--fg);border-radius:4px;font-size:12px;padding:3px 8px;cursor:pointer}
+textarea{width:100%;min-height:34px;background:var(--card);color:var(--fg);border:1px solid var(--line);border-radius:4px;font:13px inherit;padding:4px;margin-top:4px}
+.total{position:sticky;top:0;z-index:5;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line);display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+@media (max-width:700px){.why{display:none}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<script>
+const PLAN = __PLAN_JSON__;
+const PALETTE = ["#dc2626","#2563eb","#d97706","#9333ea","#0891b2","#16a34a","#db2777","#ea580c","#64748b","#57534e","#65a30d","#a8a29e"];
+const TIER_COLORS = {quick:"#16a34a", easy:"#2563eb", choice:"#d97706", risky:"#dc2626"};
+const esc = s => String(s ?? "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const KEY = "disk-cleanup:" + PLAN.title;
+let st = {}; try { st = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+const items = PLAN.tiers.flatMap(t => t.items.map(i => ({...i, tier: t.name, risky: t.id === "risky"})));
+const total = PLAN.breakdown.reduce((a, g) => a + g.gb, 0);
+document.title = PLAN.title;
+document.getElementById("app").innerHTML = `
+<h1>${esc(PLAN.title)}</h1><p class="sub">${esc(PLAN.subtitle)}</p>
+${(PLAN.stats || []).length ? `<div class="stats">${PLAN.stats.map(([l, v]) => `<div class="stat"><span>${esc(l)}</span><b>${esc(v)}</b></div>`).join("")}</div>` : ""}
+<div class="total"><span>Selected to reclaim: <b id="sel">0 GB</b></span><button id="export">Copy my choices as markdown</button><button id="reset">Reset</button></div>
+${(PLAN.notes || []).map(n => `<div class="note"><b>${esc(n.title)}</b><div>${esc(n.text).replace(/\n/g,"<br>")}</div>${n.code ? `<pre>${esc(n.code)}</pre>` : ""}</div>`).join("")}
+<h2>Where the space goes</h2>
+<div class="bar">${PLAN.breakdown.map((g, i) => `<div style="width:${g.gb / total * 100}%;background:${PALETTE[i % PALETTE.length]}" title="${esc(g.name)}: ${g.gb} GB">${g.gb / total > .06 ? g.gb + " GB" : ""}</div>`).join("")}</div>
+${PLAN.breakdown.map((g, i) => `<details><summary><span class="sw" style="background:${PALETTE[i % PALETTE.length]}"></span><b>${esc(g.name)}</b><span>${g.gb} GB</span></summary>
+${(g.items || []).length ? `<table><tbody>${g.items.map(([l, s]) => `<tr><td>${esc(l)}</td><td class="sz">${s}</td></tr>`).join("")}</tbody></table>` : ""}</details>`).join("")}
+${PLAN.tiers.map(t => `<h2><span class="tag" style="background:${TIER_COLORS[t.id] || "#64748b"}">${esc(t.name)}</span></h2><p class="sub">${esc(t.desc)}</p>
+<table><thead><tr><th></th><th>Item</th><th style="text-align:right">GB</th><th class="why">What / how</th></tr></thead><tbody>
+${t.items.map(i => `<tr><td class="ck">${t.id === "risky" ? "" : `<input type="checkbox" data-id="${esc(i.id)}">`}</td>
+<td><b>${esc(i.name)}</b>${t.id === "risky" ? "" : `<textarea data-note="${esc(i.id)}" placeholder="note…"></textarea>`}</td><td class="sz">${i.gb || "–"}</td>
+<td class="why"><div class="muted">${esc(i.why)}</div>${i.cmd ? `<pre>${esc(i.cmd)}</pre>` : ""}</td></tr>`).join("")}</tbody></table>`).join("")}`;
+function render() {
+  let s = 0;
+  document.querySelectorAll("input[data-id]").forEach(b => {
+    const on = !!(st[b.dataset.id] || {}).on; b.checked = on; b.closest("tr").classList.toggle("done", on);
+    if (on) s += items.find(i => i.id === b.dataset.id).gb || 0;
+  });
+  document.getElementById("sel").textContent = Math.round(s) + " GB";
+}
+document.querySelectorAll("textarea[data-note]").forEach(t => { t.value = (st[t.dataset.note] || {}).note || ""; t.oninput = () => { st[t.dataset.note] = {...st[t.dataset.note], note: t.value}; save(); }; });
+document.addEventListener("change", e => { if (e.target.dataset.id) { st[e.target.dataset.id] = {...st[e.target.dataset.id], on: e.target.checked}; save(); render(); } });
+document.getElementById("reset").onclick = () => { st = {}; save(); document.querySelectorAll("textarea").forEach(t => t.value = ""); render(); };
+document.getElementById("export").onclick = e => {
+  const md = ["# " + PLAN.title + ": my choices"]; let cur = "";
+  items.filter(i => !i.risky).forEach(i => { const x = st[i.id] || {}; if (!x.on && !x.note) return;
+    if (i.tier !== cur) { cur = i.tier; md.push("", "## " + cur); }
+    md.push(`- [${x.on ? "x" : " "}] ${i.name} (${i.gb} GB) [id:${i.id}]${x.note ? " — " + x.note : ""}`); });
+  md.push("", "Selected: " + document.getElementById("sel").textContent);
+  navigator.clipboard.writeText(md.join("\n")); e.target.textContent = "Copied, paste it back to the agent";
+  setTimeout(() => e.target.textContent = "Copy my choices as markdown", 2000);
+};
+render();
+</script>
+</body>
+</html>

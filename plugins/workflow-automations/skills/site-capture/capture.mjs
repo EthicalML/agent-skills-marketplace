@@ -4,7 +4,7 @@
 //   node capture.mjs --url http://127.0.0.1:4321 --flow ./flow.mjs --name demo
 //
 // Flags: --url --flow --name --out --width --height --zoom --theme --speed
-//        --pace --cursor --headed
+//        --pace --cursor --headed --no-root
 //
 // The flow module default-exports `async (ctx) => {...}`. See SKILL.md for ctx.
 
@@ -198,9 +198,13 @@ const elapsed = () => ((Date.now() - startedAt) / 1000).toFixed(1);
 const pause = (ms) => page.waitForTimeout(Math.round(ms * PACE));
 const mark = (label) => console.log(`  ${elapsed()}s  ${label}`);
 
+// Sites that hold connections open (analytics beacons, long-poll, video) never
+// reach networkidle, so waiting on it unconditionally hangs until the timeout
+// and kills the run. Wait for quiet when it comes, give up on it when it does
+// not, and carry on either way.
 const settle = async () => {
-  await page.waitForLoadState('networkidle');
-  await page.evaluate(() => document.fonts.ready);
+  await page.waitForLoadState('networkidle', { timeout: 8000 }).catch(() => {});
+  await page.evaluate(() => document.fonts.ready).catch(() => {});
 };
 
 // Eased travel at a constant rate: duration follows distance, so no beat looks
@@ -309,7 +313,9 @@ const back = async (offset) => {
 };
 
 const goto = async (path) => {
-  await page.goto(new URL(path, url).href, { waitUntil: 'networkidle' });
+  // domcontentloaded rather than networkidle for the same reason as `settle`:
+  // the strict wait is a nice-to-have, and `settle` below reaches for it anyway.
+  await page.goto(new URL(path, url).href, { waitUntil: 'domcontentloaded' });
   await settle();
 };
 
@@ -320,7 +326,13 @@ console.log(`  viewport ${width}x${height}, zoom ${zoom}${theme ? `, theme ${the
 
 // The flow starts on the landing page; recording begins with the page created,
 // so the load itself is on film.
-await goto('/');
+if (args.includes('--no-root')) {
+  console.log('  root load skipped (--no-root)');
+} else {
+  await goto('/').catch((error) => {
+    console.log(`  root load failed, continuing: ${error.message.split('\n')[0]}`);
+  });
+}
 
 await flow({
   back,
