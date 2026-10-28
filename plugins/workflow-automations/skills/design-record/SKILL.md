@@ -20,12 +20,21 @@ Read CONTRIBUTING.md via: gh api -H 'Accept: application/vnd.github.raw+json' re
 
 Non-trivial work is researched, decided and planned in a folder before it is built. This skill is context, not a state machine. Use judgement about where the work is, and move back and forth as findings demand.
 
+## Keep it simple
+
+This is the point of the whole process, not one rule among many.
+
+- Research and design exist to find the simplest design that works. Never use them to justify a complicated one.
+- Simple does not mean fewer features. It means easy to understand, use, maintain and debug, with no magic.
+- Agents over-produce by default: too many ADRs, phases, files and words. Cut back before showing the user anything.
+- Test real multi-step workflows across components. Do not write tests that only check one function returns its input.
+
 ## The folder
 
 ```
 .github/adrs/<NNN-topic>/        next free number plus a short kebab-case topic, e.g. 001-standup-cli
   research/   proposed-research.md, findings, spikes/<name>.md, round-N-findings.md
-  adrs/       proposed-adrs.md, ADR-001-<name>.md (one to three ADRs)
+  adrs/       proposed-adrs.md, ADR-001-<name>.md (as few ADRs as possible)
   plan/       proposed-plan.md
   learnings/  <phase>-learnings.md
 ```
@@ -35,13 +44,12 @@ If the folder exists, read the ADRs, the plan and the newest learnings first, th
 ## How the work moves
 
 1. **Research.** Write `research/proposed-research.md`: the question, what exists already, desk research and the spikes to run. Wait for the user to approve it. Research is hands-on: run spikes in parallel, each testing one hypothesis with the smallest code that can. Write each result down, then a round-N findings note saying what held, what broke and whether another round is needed. Repeat until the open questions are small enough to decide.
-2. **ADRs.** Write `adrs/proposed-adrs.md` with the ADR structure, and wait for approval. Then write one to three ADRs, never more. Each decision gets one-line options with the trade-off inline, and a recommendation. The user decides. Afterwards each ADR states the current state only: what exists and why, in the present tense, with no history of what was tried. Rewrite it when the design changes.
-3. **Plan.** Write `plan/proposed-plan.md`: one pull request, two at most. Say how the work is verified with tests that exercise real multi-step workflows, not single functions. Wait for approval.
+2. **ADRs.** Write `adrs/proposed-adrs.md` with the ADR structure, and wait for approval. Then write as few ADRs as the decisions need: one is ideal, three is the limit. Fewer, shorter ADRs are better. Each decision gets one-line options with the trade-off inline, and a recommendation. The user decides. Afterwards each ADR states the current state only: what exists and why, in the present tense, with no history of what was tried. Rewrite it when the design changes.
+3. **Plan.** Write `plan/proposed-plan.md`: one pull request, two at most. Say how the work is verified, with the workflow tests described above. Wait for approval.
 4. **Build.** Work through the plan. Append learnings to `learnings/` as they happen, not at the end. When a finding invalidates an ADR or the plan, stop. Run a small research loop, update the ADR, then continue.
 
 ## Rules
 
-- Keep it simple. The process exists to find the simplest answer; a short ADR and a small change are a good outcome.
 - Every `proposed-*.md` waits for the user's approval before its work starts.
 - Write for the user to read: short plain sentences, no bullet walls, no jargon.
 - Report what you ran, what a subagent reported, and what nobody ran, separately.
