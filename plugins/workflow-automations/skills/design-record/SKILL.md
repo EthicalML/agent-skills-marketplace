@@ -23,7 +23,7 @@ Non-trivial work is researched, decided and planned in a folder before it is bui
 ## The folder
 
 ```
-.github/adrs/<NNN-topic>/        NNN is the next free number, e.g. 001-design
+.github/adrs/<NNN-topic>/        next free number plus a short kebab-case topic, e.g. 001-standup-cli
   research/   proposed-research.md, findings, spikes/<name>.md, round-N-findings.md
   adrs/       proposed-adrs.md, ADR-001-<name>.md (one to three ADRs)
   plan/       proposed-plan.md
@@ -45,4 +45,4 @@ If the folder exists, read the ADRs, the plan and the newest learnings first, th
 - Every `proposed-*.md` waits for the user's approval before its work starts.
 - Write for the user to read: short plain sentences, no bullet walls, no jargon.
 - Report what you ran, what a subagent reported, and what nobody ran, separately.
-- Commit in small steps, each with a message saying what changed and why.
+- Commit in small steps, each with a message saying what changed and why. Commit each record file as you write it, proposals included.
