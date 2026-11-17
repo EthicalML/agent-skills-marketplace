@@ -43,7 +43,7 @@ Complete, not comprehensive: someone new can understand and safely change the sy
 - Each file states what is decided and why, in the present tense. No history, no rejected options.
 - Name the file and symbol instead of copying values the code already holds (timeouts, limits, routes, field lists). Copy a value only when the value itself is the decision.
 - Write paths relative to the repository root.
-- About 100 to 150 lines per file. Longer means it is describing code rather than decisions.
+- A decision is a choice someone could reasonably have made differently. Keep every one, each in a few short sentences; keep a table where a table is the clearest form. Cut copies of code, never decisions: length follows the size of the area, and most files land between 80 and 200 lines.
 
 ## Steps
 
@@ -77,7 +77,7 @@ If `adrs/` already uses the standard files and the task is one change or one rev
    - Carry over every decision the code still follows and drop the rest. Where two docs contradict each other, read the code and write what it does.
    - Move point-in-time material (audit tables, incident notes, migration logs) to `docs/` if someone still needs it; otherwise drop it.
    - `git mv` the old file that contributes most to each standard file, so its history follows, and `git rm` the rest.
-   - Update every reference to an old file name across the repository, code comments included: `git grep -nE 'adr-[0-9]{3}|adrs/' -- . ':!adrs/'`.
+   - Update every reference to an old `adrs/` file name across the repository, code comments included: `git grep -nE 'adrs/adr-|adr-[0-9]{3}' -- . ':!adrs/' ':!.github/adrs/'`. References to design records in `.github/adrs/` stay as they are.
 
    Then write `adrs/README.md`: one paragraph with the rule from the top of this skill, a table of file and what it covers, what runs, how to run it (the real commands, from the Makefile or scripts), and a repo map of the top folders.
 
@@ -98,6 +98,6 @@ If `adrs/` already uses the standard files and the task is one change or one rev
    grep -niE 'previously|used to|no longer|originally|we tried|was changed|round [0-9]' adrs/*.md
    wc -l adrs/*.md
    ```
-   Make each `MISSING` path repository-relative or remove it; a glob or a URL fragment can match falsely, so judge those, and run the check again. Rewrite each history line in the present tense. Cut a file well over 150 lines back to its decisions. Then reread each file as someone new to the repository: if a decision they would need to change the code safely is missing, add it.
+   Make each `MISSING` path repository-relative and run the check again. Paths that only exist after a build or at run time (`web/dist`, a cache folder), globs and URL fragments may stay; do not reword a file to satisfy the check. Rewrite each history line in the present tense. Where a file runs long, cut copies of code, not decisions. Then reread each file as someone new to the repository: if a decision they would need to change the code safely is missing, add it.
 
-6. **Keep them current.** When a change or a review alters a decision, edit that decision in place in the same pull request: rewrite it, never append "Update:" notes. A new decision is a new heading in its file; a dropped one is deleted. Name the file and decision in the pull request description. A new area goes into the standard file that covers it before a new file is added.
+6. **Keep them current.** When a change or a review alters a decision, edit that decision in place in the same pull request: rewrite it, never append "Update:" notes. A new decision is a new heading in its file; a dropped one is deleted. Name the file and the decision's heading in the pull request description (`backend.md`, "Dash0 gives the live rate"). A new area goes into the standard file that covers it before a new file is added.
