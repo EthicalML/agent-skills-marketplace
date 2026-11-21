@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read local Joplin notes with SQLite and create notes through the terminal CLI."""
+"""Read local Joplin notes with SQLite and write notes through the terminal CLI."""
 
 import argparse
 from collections import Counter
@@ -35,8 +35,17 @@ def arguments():
     create.add_argument("--notebook", required=True)
     create.add_argument("--title", required=True)
     create.add_argument("--body-file", type=Path, required=True)
-    create.add_argument("--tag", action="append", default=[])
-    create.add_argument("--dry-run", action="store_true")
+    update = commands.add_parser("update")
+    update.add_argument("note_id")
+    update.add_argument("--title")
+    body = update.add_mutually_exclusive_group()
+    body.add_argument("--body-file", type=Path)
+    body.add_argument("--append-file", type=Path)
+    update.add_argument("--untag", action="append", default=[])
+    update.add_argument("--notebook")
+    for command in (create, update):
+        command.add_argument("--tag", action="append", default=[])
+        command.add_argument("--dry-run", action="store_true")
     return parser.parse_args()
 
 
@@ -49,7 +58,7 @@ def database_path(args):
     config = Path.home() / ".config"
     terminal = config / "joplin/database.sqlite"
     desktop = config / "joplin-desktop/database.sqlite"
-    if args.command != "create" and not terminal.exists() and desktop.exists():
+    if args.command not in ("create", "update") and not terminal.exists() and desktop.exists():
         return desktop
     return terminal
 
@@ -145,36 +154,96 @@ def read_notes(db, args, folders, paths):
             print(row["id"], paths.get(row["parent_id"], ""), row["title"], date(row["updated_time"]), sep="\t")
 
 
-def check_idle(path):
+def warn_if_tui_open(path):
+    # lsof scopes the process lookup to this database, including custom profiles.
     try:
-        check = subprocess.run(["lsof", "-t", "--", str(path.resolve())], capture_output=True)
-    except FileNotFoundError:
-        check = None
-    if check and set(check.stdout.split()) - {str(os.getpid()).encode()}:
-        raise ValueError("Another process has this profile open. Close it before creating a note.")
-    if check is None or check.stderr or check.returncode not in (0, 1):
-        raise ValueError("Could not check profile use with lsof. Check lsof availability and permissions.")
+        holders = subprocess.run(["lsof", "-t", "--", str(path.resolve())], capture_output=True, text=True)
+        pids = [pid for pid in holders.stdout.split() if pid.isdigit() and pid != str(os.getpid())]
+        if not pids:
+            return
+        processes = subprocess.run(["ps", "-ww", "-p", ",".join(pids), "-o", "command="],
+                                   capture_output=True, text=True)
+    except OSError:
+        return
+    tui = r"(?:(?:\S*/)?node\s+)?(?:\S*/)?joplin(?:/main\.js)?(?:\s+--profile\s+\S+)?"
+    if any(re.fullmatch(tui, line.strip()) for line in processes.stdout.splitlines()):
+        print("The TUI won't show the change until you switch notebooks. Don't write while a note is "
+              "open in an external editor because CLI startup removes edit-* temp files.", file=sys.stderr)
 
 
-def create_note(db, path, args, folder_id):
+def append_body(original, addition):
+    if not original or not addition:
+        return original + addition
+    # Preserve both texts and add only the line breaks missing at the join.
+    left = original[-4:].replace("\r\n", "\n")
+    right = addition[:4].replace("\r\n", "\n")
+    breaks = len(left) - len(left.rstrip("\n")) + len(right) - len(right.lstrip("\n"))
+    return original + "\n" * max(0, 2 - breaks) + addition
+
+
+def update_steps(db, args, folder_id):
+    selector = args.note_id.lower()
+    if not re.fullmatch("[0-9a-fA-F]{32}", args.note_id):
+        raise ValueError("update requires a full 32-hex note ID.")
+    visible = undeleted(db, "notes")
+    if not args.include_conflicts:
+        visible += " AND is_conflict = 0"
+    note = db.execute("SELECT body, encryption_applied FROM notes WHERE id = ? AND " + visible,
+                      (selector,)).fetchone()
+    if not note or note["encryption_applied"]:
+        raise ValueError("Note missing, excluded, or awaiting decryption.")
+
+    # The CLI looks up titles before IDs. Its mv command also tries folders first.
+    if db.execute("SELECT 1 FROM notes WHERE title = ? AND id != ?", (selector, selector)).fetchone():
+        raise ValueError("Another note's title matches this ID and would make the CLI selector ambiguous.")
+    if folder_id and db.execute("SELECT 1 FROM folders WHERE id = ? OR title = ?", (selector, selector)).fetchone():
+        raise ValueError("A notebook matches the note ID and would intercept the CLI move.")
+
+    steps = []
+    if args.body_file or args.append_file:
+        body = (args.body_file or args.append_file).read_bytes().decode("utf-8")
+        if args.append_file:
+            body = append_body(note["body"], body)
+        steps.append(["set", "--", selector, "body", body])
+    steps.extend(["tag", "--", "add", tag, selector] for tag in args.tag)
+    steps.extend(["tag", "--", "remove", tag, selector] for tag in args.untag)
+    if folder_id:
+        steps.append(["mv", "--", selector, folder_id])
+    if args.title is not None:
+        steps.append(["set", "--", selector, "title", args.title])
+    if not steps:
+        raise ValueError("Supply a title, file, tag change, or destination notebook.")
+    return selector, steps
+
+
+def write_note(db, path, args, folders, paths):
     if path.name != "database.sqlite":
         raise ValueError("CLI writes require a profile containing database.sqlite.")
     config = path.parent / "profiles.json"
     if config.exists() and json.loads(config.read_text()).get("currentProfileId") != "default":
         raise ValueError("Pass the active profile's own directory with --profile.")
-    body = args.body_file.read_bytes().decode("utf-8")
-    if not args.title.strip() or any(not tag.strip() for tag in args.tag):
-        raise ValueError("Titles and tags must contain text.")
-    if any("\0" in value for value in [body, args.title, *args.tag]):
+    if args.title is not None and not args.title.strip():
+        raise ValueError("Titles must contain text.")
+    if any(not tag.strip() for tag in args.tag + getattr(args, "untag", [])):
+        raise ValueError("Tags must contain text.")
+    folder_id = notebook_id(args.notebook, folders, paths) if args.notebook is not None else None
+    if folder_id and db.execute("SELECT 1 FROM folders WHERE title = ? AND id != ?", (folder_id, folder_id)).fetchone():
+        raise ValueError("Another notebook's title matches the destination ID.")
+    if args.command == "update":
+        selector, steps = update_steps(db, args, folder_id)
+    else:
+        # A unique literal selector avoids wildcard and duplicate-title updates.
+        selector = "draft-" + uuid4().hex
+        body = args.body_file.read_bytes().decode("utf-8")
+        steps = [["use", "--", folder_id], ["mknote", "--", selector], ["set", "--", selector, "body", body]]
+        steps.extend(["tag", "--", "add", tag, selector] for tag in args.tag)
+        steps.append(["set", "--", selector, "title", args.title])
+    if any("\0" in value for step in steps for value in step):
         raise ValueError("CLI arguments cannot contain NUL characters.")
     if not args.dry_run:
-        check_idle(path)
-    # A unique literal selector avoids wildcard and duplicate-title updates.
-    draft = "draft-" + uuid4().hex
+        warn_if_tui_open(path)
     profile = os.path.expanduser(args.profile) if args.profile else str(path.parent)
-    steps = [["use", "--", folder_id], ["mknote", "--", draft], ["set", "--", draft, "body", body]]
-    steps.extend(["tag", "--", "add", tag, draft] for tag in args.tag)
-    steps.append(["set", "--", draft, "title", args.title])
+    note_id = selector
     for step in steps:
         command = ["joplin", "--profile", profile, *step]
         if args.dry_run:
@@ -183,16 +252,17 @@ def create_note(db, path, args, folder_id):
         try:
             result = subprocess.run(command)
         except OSError as error:
-            raise ValueError(f"Could not start Joplin {step[0]}: {error}. Check recent for {draft}.") from error
+            raise ValueError(f"Could not start Joplin {step[0]}: {error}. Check recent for {selector}.") from error
         if result.returncode:
-            raise ValueError(f"Joplin {step[0]} failed. Check recent for {draft} before retrying.")
+            raise ValueError(f"Joplin {step[0]} failed. Check recent for {selector} before retrying.")
         if step[0] == "mknote":
             note = db.execute("SELECT id FROM notes WHERE parent_id = ? AND title = ?",
-                              (folder_id, draft)).fetchone()
+                              (folder_id, selector)).fetchone()
             if not note:
-                raise ValueError(f"Draft missing from the target notebook. Locate {draft} before retrying.")
+                raise ValueError(f"Draft missing from the target notebook. Locate {selector} before retrying.")
+            note_id = note["id"]
     if not args.dry_run:
-        print(note["id"])
+        print(note_id)
 
 
 def main():
@@ -201,8 +271,8 @@ def main():
     with sqlite3.connect(path.resolve().as_uri() + "?mode=ro", uri=True) as db:
         db.row_factory = sqlite3.Row
         folders, paths = notebook_paths(db)
-        if args.command == "create":
-            create_note(db, path, args, notebook_id(args.notebook, folders, paths))
+        if args.command in ("create", "update"):
+            write_note(db, path, args, folders, paths)
         else:
             read_notes(db, args, folders, paths)
 
