@@ -29,14 +29,14 @@ Read CONTRIBUTING.md via: gh api -H 'Accept: application/vnd.github.raw+json' re
    | `show "Meeting minutes"` | Title, notebook, tags, timestamps and Markdown. Use a full note ID for duplicate titles. |
    | `recent -n 5 --notebook "Work/Planning"` | Most recently updated notes in that notebook. Omit the filter for all notebooks. |
 
-3. Write through the terminal CLI with the TUI open. Switch away from the notebook and back to see changes. Its count may stay stale. Finish any external-editor session first because CLI startup removes `edit-*` temporary files. Preview either write with `--dry-run` (the output includes body text).
+3. Write only when the user asks for a note to be created or changed, and only through `create` and `update`. Never write to `database.sqlite` directly and never call the `joplin` CLI by hand: the helper is what keeps sync, encryption and title-collision checks intact. There is no delete; leave deletions to the user. Writes are safe with the terminal UI open. Tell the user to switch away from the notebook and back to see changes (its count may stay stale), and that a notebook created outside the UI only appears after it restarts. Finish any external-editor session first because CLI startup removes `edit-*` temporary files. Preview either write with `--dry-run` (the output includes body text).
 4. Use `create` with an existing notebook and a UTF-8 Markdown file. The CLI keeps the destination selected.
 
    ```sh
    python3 joplin_notes.py create --notebook "Work/Planning" --title "Meeting minutes" --body-file minutes.md --tag meeting
    ```
 
-5. Use `update` with the full 32-hex ID from a read command. Choose `--body-file` to replace the Markdown or `--append-file` to add text after a blank line. Append reads and replaces the whole body, so avoid editing that body concurrently. Supply only the changes requested.
+5. To edit, first find the note with `search`, `grep` or `recent`, confirm it is the one the user means with `show`, then run `update` with its full 32-hex ID. Choose `--body-file` to replace the Markdown or `--append-file` to add text after a blank line. Append reads and replaces the whole body, so avoid editing that body concurrently. Supply only the changes requested.
 
    ```sh
    python3 joplin_notes.py update "$note_id" --append-file decisions.md --title "Planning decisions" --tag reviewed --untag draft --notebook "Work/Archive"
