@@ -1,7 +1,7 @@
 {
   "name": "workflow-automations",
-  "description": "Automate practical workflows: scripted website walkthrough captures, skill-driven Python agent harnesses for OpenAI-compatible endpoints, local Streamlit data apps with browser-driven verification, and a design-record workflow that runs work through research, spikes, ADRs and a plan.",
-  "version": "0.5.0",
+  "description": "Automate practical workflows: scripted website walkthrough captures, skill-driven Python agent harnesses for OpenAI-compatible endpoints, local Streamlit data apps with browser-driven verification, local Joplin note search, reading and creation, and a design-record workflow that runs work through research, spikes, ADRs and a plan.",
+  "version": "0.6.0",
   "keywords": [
     "browser",
     "capture",
@@ -13,7 +13,9 @@
     "openai-compatible",
     "streamlit",
     "polars",
-    "playwright"
+    "playwright",
+    "joplin",
+    "notes"
   ],
   "skills": [
     "./skills/"
