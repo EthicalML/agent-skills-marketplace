@@ -1,5 +1,5 @@
 ---
-name: living-adrs
+name: repo-adrs-setup
 description: "Keep a repository's architecture in adrs/ as a few current-state files, one per area (for example backend, frontend, deployment), the single source of truth that reviewers read first and each change edits in place. Use when asked to set up, standardize, simplify or update a repo's ADRs or architecture docs, or when a change or a review alters an architectural decision."
 ---
 
@@ -20,7 +20,7 @@ Read CONTRIBUTING.md via: gh api -H 'Accept: application/vnd.github.raw+json' re
 
 A repository's architecture as it is now, in a few files in `adrs/`, one per area. They are the single source of truth: reviewers read them first, a change that alters a decision edits the file in the same pull request, and git history is the log. Where a file and the code disagree, the code wins and the file is fixed in the same change.
 
-These are not per-change proposals. Design records for one piece of work (`design-record`, `.github/adrs/NNN-topic/`) stay where they are and are not copied here; once that work is built, its outcome is written into the area file it changed.
+These are not per-change proposals. Design records for one piece of work (`repo-new-adr-rpi`, `.github/adrs/NNN-topic/`) stay where they are and are not copied here; once that work is built, its outcome is written into the area file it changed.
 
 ## The files
 
