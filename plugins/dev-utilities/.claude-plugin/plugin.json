@@ -1,7 +1,7 @@
 {
   "name": "dev-utilities",
   "description": "Utilities for writing skills, writing and trimming agent instruction files, explaining code changes, standardizing agent instructions across development tools, keeping a repository's architecture as a few living ADRs, and analysing and safely freeing disk space on a developer machine.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "keywords": [
     "skills",
     "authoring",

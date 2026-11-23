@@ -1,5 +1,5 @@
 ---
-name: design-record
+name: repo-new-adr-rpi
 description: Run non-trivial work through a design record in .github/adrs/NNN-topic/ - research with spikes, a few ADRs, a short plan, then build, logging learnings and looping back when findings change a decision. Use when the user starts a new project or feature, asks for research, spikes, ADRs or a plan, or points at an existing .github/adrs folder.
 ---
 

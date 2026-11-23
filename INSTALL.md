@@ -34,7 +34,7 @@ Install the **default set** unless the user opts out. Confirm the list with them
 
 **Default set:**
 
-- `dev-utilities` — skill authoring (`writing-skills`), agent instruction content (`writing-agents-md`), code-change walkthroughs (`explain-code-walkthrough`), and cross-harness instruction-file standardization (`standardize-agent-instructions`)
+- `dev-utilities` — skill authoring (`writing-skills`), code-change walkthroughs (`explain-code-walkthrough`), and agent instruction setup and writing (`repo-agents-setup`)
 - `workflow-automations` — scripted browser capture of a website as video or GIF (`site-capture`), and build a skill-driven Python agent (`create-agent-harness`) against any OpenAI-compatible endpoint
 - `codebase-automations` — Dependabot PR diagnosis, fixing, and safe merging (`dependabot-fix`, `dependabot-fix-all`)
 

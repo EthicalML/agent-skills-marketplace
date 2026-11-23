@@ -1,9 +1,4 @@
----
-name: standardize-agent-instructions
-description: Standardize a codebase's agent instruction files so one set of files works across many harnesses (Copilot, Claude Code, Codex/AGENTS.md consumers, Cursor, Gemini). Use when asked to standardize, consolidate, or migrate agent/AI instruction files (CLAUDE.md, AGENTS.md, copilot-instructions, .instructions.md, rules files) in a repo.
----
-
-# Standardize Agent Instructions
+# Set up the instruction layout
 
 Converge a repo's agent instruction files onto one layout: **`.github` files are the single source of truth (SSOT), everything else is a symlink to them.**
 
@@ -17,9 +12,7 @@ AGENTS.md    -> .github/copilot-instructions.md   # symlink
 .claude/rules/<name>.md -> ../../.github/instructions/<name>.instructions.md  # symlinks
 ```
 
-If the user explicitly asks WHY this layout (reasoning, justification, sources), read `references/rationale.md`. Otherwise do not.
-
-This skill moves files; it does not judge their content. If the instructions themselves are bloated, repetitive or largely reference material, run `writing-agents-md` after this one.
+If the user explicitly asks WHY this layout (reasoning, justification, sources), read [rationale.md](rationale.md). Otherwise do not.
 
 ## Steps
 
@@ -31,6 +24,7 @@ This skill moves files; it does not judge their content. If the instructions the
    ```
 
 2. **Consolidate the global file.** End state: one real `.github/copilot-instructions.md`.
+   - No global file exists: create the parent directory and draft the canonical instructions using [writing.md](writing.md).
    - One global file exists elsewhere (CLAUDE.md / AGENTS.md): `git mv` it to `.github/copilot-instructions.md`. If a stub/pointer file already sits at that path ("read AGENTS.md"), `git rm` it first — `git mv` refuses to overwrite.
    - Multiple global files with differing content: read them, merge into one (keep every non-duplicate instruction; prefer the most current wording; ask the user only if two instructions genuinely contradict).
    - Add/refresh a short "Agent Instruction Files (SSOT + symlinks)" section in it stating: `.github` files are the SSOT, root CLAUDE.md/AGENTS.md and `.claude/rules/*` are symlinks, only ever edit the `.github` files, and keep `applyTo:`/`paths:` globs in sync.
@@ -52,6 +46,7 @@ This skill moves files; it does not judge their content. If the instructions the
    ln -sfn .github/copilot-instructions.md AGENTS.md
    mkdir -p .claude/rules
    for f in .github/instructions/*.instructions.md; do
+     [ -f "$f" ] || continue
      n=$(basename "$f" .instructions.md)
      ln -sfn "../../.github/instructions/$n.instructions.md" ".claude/rules/$n.md"
    done
