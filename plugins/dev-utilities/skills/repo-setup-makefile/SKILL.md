@@ -29,7 +29,6 @@ Define only the ones the repository can actually do. Each line is the canonical 
 | `help` | Default goal; lists the targets | |
 | `setup` | Install dependencies and tools, once | `install` |
 | `run` | Start the app locally as it normally runs: server, service or CLI | `start`, `serve` |
-| `dev` | Start it in development mode (watch, hot reload, debug); only when that differs from `run`, never an alias of it | |
 | `test` | Run the test suite | `tests` |
 | `lint` | Static checks, no changes | |
 | `format` | Apply formatting | `fmt` |
@@ -37,7 +36,7 @@ Define only the ones the repository can actually do. Each line is the canonical 
 | `build` | Produce the deployable artefact | |
 | `clean` | Remove generated output | |
 
-Any other task keeps a descriptive name of its own (`release`, `film`, `migrate`).
+Anything else is optional and only added when the repository has it, under a descriptive name of its own; common ones are `dev` (development mode with watch or hot reload, never an alias of `run`), `release`, `deploy` and `migrate`.
 
 ## Steps
 
