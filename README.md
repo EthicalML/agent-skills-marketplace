@@ -8,7 +8,7 @@ This repository is an open-source marketplace of portable agent skills and plugi
 
 | Plugin | Skills | Description |
 | --- | --- | --- |
-| `dev-utilities` | `writing-skills`, `explain-code-walkthrough`, `repo-agents-setup`, `repo-adrs-setup`, `disk-cleanup` | Author reliable skills, keep agent instruction files short and followable, explain code changes, align instruction files across agent tools, keep the architecture as a few current-state ADRs, and free disk space safely. |
+| `dev-utilities` | `writing-skills`, `explain-code-walkthrough`, `repo-agents-setup`, `repo-adrs-setup`, `repo-setup-makefile`, `repo-full-setup`, `disk-cleanup` | Author reliable skills, keep agent instruction files short and followable, explain code changes, align instruction files across agent tools, keep the architecture as a few current-state ADRs, give every repo the same Makefile targets, run all the repo setup skills in one pass, and free disk space safely. |
 | `workflow-automations` | `site-capture`, `create-agent-harness`, `create-streamlit-app`, `verify-streamlit-app`, `repo-new-adr-rpi`, `joplin-notes` | Record scripted website walkthroughs as video or GIF, build skill-driven Python agents against OpenAI-compatible endpoints, scaffold local Streamlit data apps verified through a headless browser, run work through research, ADRs and a plan in `.github/adrs/`, and search, read, create and edit local Joplin notes. |
 | `codebase-automations` | `dependabot-fix`, `dependabot-fix-all`, `release-repo` | Diagnose and safely merge Dependabot pull requests, or assess release conformance and run profile-driven releases with artifact validation. |
 
