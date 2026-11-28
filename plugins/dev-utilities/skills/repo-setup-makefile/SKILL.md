@@ -28,7 +28,8 @@ Define only the ones the repository can actually do. Each line is the canonical 
 | --- | --- | --- |
 | `help` | Default goal; lists the targets | |
 | `setup` | Install dependencies and tools, once | `install` |
-| `run` | Start the app locally: dev server, service or CLI | `start`, `serve`, `dev` |
+| `run` | Start the app locally as it normally runs: server, service or CLI | `start`, `serve` |
+| `dev` | Start it in development mode (watch, hot reload, debug); only when that differs from `run`, never an alias of it | |
 | `test` | Run the test suite | `tests` |
 | `lint` | Static checks, no changes | |
 | `format` | Apply formatting | `fmt` |
@@ -61,10 +62,10 @@ Any other task keeps a descriptive name of its own (`release`, `film`, `migrate`
    Shape to follow:
    ```make
    .DEFAULT_GOAL := help
-   .PHONY: help setup run test clean install start serve dev tests
+   .PHONY: help setup run test clean install start serve tests
 
    install: setup
-   start serve dev: run
+   start serve: run
    tests: test
 
    help: ## List the targets
