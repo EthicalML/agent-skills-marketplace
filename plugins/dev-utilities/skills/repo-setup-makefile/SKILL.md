@@ -53,6 +53,7 @@ Add other targets only for tasks the repository already has and people actually 
    - Every real target has a `## description` comment on its rule line; aliases have none, so `help` lists each command once.
    - Put the aliases in one block near the top so they are easy to see.
    - When a target needs a running service (tests against a dev server), start and stop it inside the target.
+   - `run` and `test` must work on a fresh clone. If the tool they call already installs dependencies (`uv run`, `cargo run`, `go run`), add nothing. If it does not (`pip`, `npm`), make them depend on the file `setup` creates (`.venv/bin/python`, `node_modules`), so setup runs once on first use and is skipped after.
 
    Shape to follow:
    ```make
