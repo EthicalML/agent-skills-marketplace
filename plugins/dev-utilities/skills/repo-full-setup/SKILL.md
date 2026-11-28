@@ -29,7 +29,7 @@ Runs up to three setup skills in a fixed order, each building on the last: the M
    grep -n '^## Architecture' .github/copilot-instructions.md 2>/dev/null
    ```
    Rate each of the three as **missing**, **partial** or **done**:
-   - Makefile: done when it has `help` as the default goal and the standard targets the repo can do, with the aliases from `../repo-setup-makefile/SKILL.md`; partial when a Makefile exists without them.
+   - Makefile: done when it has `help` as the default goal and the standard targets the repo can do, with the aliases from the `repo-setup-makefile` skill; partial when a Makefile exists without them.
    - ADRs: done when `adrs/README.md` and its area files exist; partial when architecture docs exist elsewhere or as numbered ADRs.
    - Agent instructions: done when `.github/copilot-instructions.md` is the real file, `CLAUDE.md` and `AGENTS.md` are symlinks to it, and it has the commands and an `## Architecture` section; partial otherwise when any instruction file exists.
 
@@ -38,9 +38,9 @@ Runs up to three setup skills in a fixed order, each building on the last: the M
 3. **Branch.** Fast-forward the default branch and create one working branch (or worktree, if the repository's instructions use them) for the whole run.
 
 4. **Run the chosen skills, in this order**, skipping the ones not chosen and committing after each:
-   - **Makefile.** Read `../repo-setup-makefile/SKILL.md` and follow its steps.
-   - **ADRs.** Read `../repo-adrs-setup/SKILL.md` and follow its steps up to, but not including, its pull request. Its step that shows the user the list of area files still waits for a yes. Cite the make targets in `adrs/README.md`.
-   - **Agent instructions.** Read `../repo-agents-setup/SKILL.md` and follow it. The global instructions list the make targets as the commands and carry the Architecture section pointing at `adrs/`.
+   - **Makefile.** Run the `repo-setup-makefile` skill.
+   - **ADRs.** Run the `repo-adrs-setup` skill up to, but not including, its pull request. Its step that shows the user the list of area files still waits for a yes. Cite the make targets in `adrs/README.md`.
+   - **Agent instructions.** Run the `repo-agents-setup` skill. The global instructions list the make targets as the commands and carry the Architecture section pointing at `adrs/`.
 
 5. **Check the three agree.** Even for skills that were skipped, every command named in the README, `adrs/` and the agent instructions is a make target that exists (`make` lists them), and none of them still names a command the Makefile replaced:
    ```bash
