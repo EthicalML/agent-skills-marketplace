@@ -36,7 +36,7 @@ Define only the ones the repository can actually do. Each line is the canonical 
 | `build` | Produce the deployable artefact | |
 | `clean` | Remove generated output | |
 
-Anything else is optional and only added when the repository has it, under a descriptive name of its own; common ones are `dev` (development mode with watch or hot reload, never an alias of `run`), `release`, `deploy` and `migrate`.
+Keep it simple: add another target only for a task the repository already has and people actually run, under a plain descriptive name. Do not invent targets to fill out the list.
 
 ## Steps
 
